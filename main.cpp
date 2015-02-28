@@ -10,7 +10,7 @@
 int main(){
 
     // Load Image
-    std::string Location = "007.jpg";
+    std::string Location = "005.jpg";
 
 
     NumberPlate PlateInstance;

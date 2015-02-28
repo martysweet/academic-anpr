@@ -32,6 +32,7 @@ class BitmapImage
         void ImageToGrayscale();
         void SobelEdgeDetection();
         void EdgeDetection();
+        void ImageToBW(int Threshold=200);
         void ImageToAdaptiveMonochrome(int Area=30);
         void ImageToLocalisedMonochrome(int Threshold=80);
         void ImageGrayscaleToDifferentialMonochrome(int Difference=10);
@@ -39,6 +40,7 @@ class BitmapImage
         void DrawRectangle(int x, int y, int w, int h,  Uint8 R, Uint8 G, Uint8 B);
         void ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions);
         ConvolutionMatrix SobelVertical, SobelHorizontal, GaussianBlur1, GaussianBlur2, GaussianBlur3;
+        ConvolutionMatrix EdgeHorizontal,Median, EdgeVertical, EdgeDetect3, EdgeDetect4, HorizontalRank, VerticalRank, Blur1;
 
     /* Don't allow these variables to be accessed by inheritied classes */
     private:

@@ -9,7 +9,20 @@ BitmapImage::BitmapImage(){
     InitialiseConvolutionMatrix(GaussianBlur1,      3, 3, 1,  {0.045, 0.122, 0.045, 0.122, 0.332, 0.122, 0.045, 0.122, 0.045});
     InitialiseConvolutionMatrix(GaussianBlur2,      3, 3, 16, {1, 2, 1, 2, 4, 2, 1, 2, 1});
     InitialiseConvolutionMatrix(GaussianBlur3,      3, 3, 5,  {0, 1, 0, 1, 1, 1, 0, 1, 0});
+    InitialiseConvolutionMatrix(HorizontalRank,     21, 3, 1,  { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                                                                 0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,
+                                                                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  });
+    InitialiseConvolutionMatrix(VerticalRank,       3, 25, 1,  {0,0.04,0,
+                                                                  0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,
 
+
+                                                                  });
+
+    InitialiseConvolutionMatrix(Blur1,              5, 5, 66,  {4,4,0,4,4,4,4,0,4,4,0,0,2,0,0,4,4,0,4,4,4,4,0,4,4});
+    InitialiseConvolutionMatrix(EdgeHorizontal,     5, 3, 1,  {-1,-1,-1,-1,-1,0,0,0,0,0,1,1,1,1,1});
+    InitialiseConvolutionMatrix(EdgeVertical,       3, 3, 1,  {-1,0,1,-1,0,1,-1,0,1});
+    InitialiseConvolutionMatrix(Median,             3, 3, 8,  {1, 1, 1, 1, 0, 1, 1, 1, 1});
+    InitialiseConvolutionMatrix(EdgeDetect4,        3, 3, 1,  {-1, -1, -1, 0, 0, 0, 1, 1, 1});
 
 }
 
@@ -100,7 +113,7 @@ void BitmapImage::ImageToGrayscale(){
     for(int y = 0; y < Image->h; y++){
         for(int x = 0; x < Image->w; x++){
             GetRGBValues(Image, x, y, &R, &G, &B);
-            s = (R+G+B)/3;
+            s = (0.299*R+0.587*G+0.114*B);
             SetRGBValues(Image, x, y, s, s, s);
         }
     }
@@ -241,13 +254,11 @@ void BitmapImage::LoadImageFromFile(std::string Filename){
 }
 
 /*
-    BitmapImage::SobelEdgeDetection(): Create Edge Embossed Image (Assumes Grayscale)
+
 */
 void BitmapImage::ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions){
-    // Create Grayscale Array
-    if(GrayscaleArray.size() == 0){
-        CreateGrayscaleMapArray();
-    }
+    // ALways Create a Grayscale Array for the current state
+    CreateGrayscaleMapArray();
 
     // Create new Image
     SDL_Surface* DestinationImage = CreateNewImage(Image->w, Image->h);
@@ -261,6 +272,7 @@ void BitmapImage::ImageConvolutionMatrixTransformation(std::vector<ConvolutionMa
         for(int c = 0; c < Convolutions.size(); c++){
             Pixel  += ProcessKernelFilter(x, y, Convolutions[c]);   // Process the Convolution Matrix
         }
+
 
         // Cap high values at 255
         if(Pixel > 255){
@@ -293,7 +305,7 @@ void BitmapImage::CreateGrayscaleMapArray(){
 }
 
 int BitmapImage::GetGrayscaleMapValue(int x, int y){
-    if(x < 0 || y < 0 || x > Image->w || y > Image->h){
+    if(x < 0 || y < 0 || x > Image->w-1 || y > Image->h-1){
         return 0;       // The values are to the top/left of the image
     }else{
         return GrayscaleArray[(Image->w*y)+x];
@@ -312,17 +324,29 @@ int BitmapImage::ProcessKernelFilter(int x, int y, ConvolutionMatrix Kernel){
         for(int m=0; m < Kernel.Rows; m++){
             for(int n=0; n < Kernel.Columns; n++){
 
-                int V = Kernel.Matrix[ ((Kernel.Columns)*m) + n ];
+                //std::cout << GetGrayscaleMapValue(x-h+n, y-v+m) << std::endl;
                 Total += GetGrayscaleMapValue(x-h+n, y-v+m) * Kernel.Matrix[ ((Kernel.Columns)*m) + n ];
 
             }
             //std::cout << m << ",";
         }
 
-        return (int)Total/Kernel.Weight;    // Round to INT
+        return (int)abs(Total/Kernel.Weight);    // Round to INT
 }
 
 
-
+void BitmapImage::ImageToBW(int Threshold){
+    Uint8 R = 0, G = 0, B = 0;
+    for(int y = 0; y < Image->h; y++){
+        for(int x = 0; x < Image->w; x++){
+            GetRGBValues(Image, x, y, &R, &G, &B);
+            if(R > Threshold){
+                SetRGBValues(Image, x, y, 0, 0, 0);
+            }else{
+                SetRGBValues(Image, x, y, 255,255,255);
+            }
+        }
+    }
+}
 
 

@@ -9,22 +9,58 @@ void NumberPlate::ProcessGlobalImage(){
  //   EdgeDetection();
 
 
-   // SobelEdgeDetection();
+    // Prepare the image
     std::vector< ConvolutionMatrix > MyFilters;
+    MyFilters.push_back(Median);
+    ImageConvolutionMatrixTransformation(MyFilters);
 
+    ImageToAdaptiveMonochrome();
+   //CreateIntensityRowProfileY();
+
+
+  //  VerticalBandDetection(4);
+   // DrawVerticalBandDetection();
+    SaveImageToFile("output.bmp");
+
+    MyFilters.clear();
     MyFilters.push_back(SobelHorizontal);
-    //MyFilters.push_back(GaussianBlur2);
+    MyFilters.push_back(SobelVertical);
+    ImageConvolutionMatrixTransformation(MyFilters);
 
-   ImageConvolutionMatrixTransformation(MyFilters);
+    SaveImageToFile("output2.bmp");
+
+
+    MyFilters.clear();
+    MyFilters.push_back(EdgeHorizontal);
+    MyFilters.push_back(EdgeVertical);
+    ImageConvolutionMatrixTransformation(MyFilters);
+
+    SaveImageToFile("output3.bmp");
+/*
+ MyFilters.clear();
+    MyFilters.push_back(EdgeHorizontal);
+    ImageConvolutionMatrixTransformation(MyFilters);
+
+    SaveImageToFile("output4.bmp");
+
+*/
+    CreateIntensityRowProfileY();
+
+
+    VerticalBandDetection(4);
+    DrawVerticalBandDetection();
+
+    SaveImageToFile("output4.bmp");
 
 /*
     CreateIntensityRowProfileY();
     CreateRowProfileY();
 
     VerticalBandDetection(4);
-    DrawVerticalBandDetection();
+
 */
-    SaveImageToFile("output.bmp");
+
+
 }
 
 
@@ -58,9 +94,9 @@ void NumberPlate::CreateRowProfileY(){
         }
 
         // Score on the image
-        for(int x=0; x < RowProfileY[y]; x++){
-            SetRGBValues(Image, x, y, 255, 0, 0);
-        }
+       // for(int x=0; x < RowProfileY[y]; x++){
+      //      SetRGBValues(Image, x, y, 255, 0, 0);
+      //  }
     }
 }
 
@@ -126,7 +162,8 @@ void NumberPlate::VerticalBandDetection(int Iterations, float Constant){
 
 void NumberPlate::DrawVerticalBandDetection(){
     for(int i = 0; i < BandBoundariesY.size(); i++){
-        DrawRectangle(20, BandBoundariesY[i].b0, Image->w-21, BandBoundariesY[i].b1-BandBoundariesY[i].b0, 0, 0, 255);
+        DrawLine(20, BandBoundariesY[i].b0, Image->w-21, BandBoundariesY[i].b1, 255, 0, 255);
+        //DrawRectangle(20, BandBoundariesY[i].b0, Image->w-21, BandBoundariesY[i].b1-BandBoundariesY[i].b0, 0, 255, 255);
     }
     std::cout << BandBoundariesY.size()-1;
 }
