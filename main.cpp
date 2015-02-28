@@ -5,7 +5,7 @@
 
 #include "SDL_Wrapper.h"
 #include "include/BitmapImage.h"
-#include "include/NumberPlate.h"
+#include "include/ANPRImage.h"
 
 int main(){
 
