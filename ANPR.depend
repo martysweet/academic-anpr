@@ -24,30 +24,39 @@
 	"SDL/SDL.h"
 	"SDL/SDL_image.h"
 
-1425145517 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/main.cpp
+1425653477 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/main.cpp
 	<iostream>
 	<string>
 	<vector>
 	<cmath>
 	"SDL_Wrapper.h"
 	"include/BitmapImage.h"
+	"include/ANPRImage.h"
 	"include/NumberPlate.h"
 
-1425143542 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/BitmapImage.h
+1425663694 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/BitmapImage.h
 	<vector>
 	<string>
 	<iostream>
 	<cstdlib>
+	<cmath>
 	"../SDL_Wrapper.h"
 
-1425145070 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/BitmapImage.cpp
+1425643894 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/BitmapImage.cpp
 	"BitmapImage.h"
 
-1425147006 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/NumberPlate.cpp
+1425222394 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/NumberPlate.cpp
 	"NumberPlate.h"
 
-1425146126 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/NumberPlate.h
+1425220207 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/NumberPlate.h
+	"BitmapImage.h"
+	"ANPRImage.h"
+
+1425663659 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/ANPRImage.h
 	<vector>
 	<sstream>
 	"BitmapImage.h"
+
+1425653636 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/ANPRImage.cpp
+	"ANPRImage.h"
 

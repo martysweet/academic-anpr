@@ -6,6 +6,11 @@
 #include "SDL_Wrapper.h"
 #include "include/BitmapImage.h"
 #include "include/ANPRImage.h"
+#include "include/NumberPlate.h"
+
+
+
+
 
 int main(){
 
@@ -13,7 +18,7 @@ int main(){
     std::string Location = "005.jpg";
 
 
-    NumberPlate PlateInstance;
+    ANPRImage PlateInstance;
     PlateInstance.LoadImageFromFile(Location);
     PlateInstance.ProcessGlobalImage();
 
