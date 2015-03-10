@@ -1,44 +1,30 @@
-#ifndef ANPRIMAGE_H
-#define ANPRIMAGE_H
+#ifndef ANPR_H
+#define ANPR_H
 
 #include <vector>
 #include <sstream>
-#include "BitmapImage.h"
-#include "DataStructures.cpp"
+#include <algorithm>
 
+#include "../src/DataStructures.cpp"
 
-
-class ANPRImage : public BitmapImage {
+#include "AnalyseImage.h"
+#include "PlateCandidate.h"
+//#include "OCRAnalysis.h"
+class ANPRImage: public AnalyseImage  {
     public:
+        ANPRImage();
+        /* Callable Functions */
         void ProcessGlobalImage();
 
 
     protected:
 
-        // Core Arithmetic Routines
-        void VerticalBandDetection(std::vector<int> RowProfile, int Iterations, float Constant=0.55);
-        void HorizontalBandDetection(std::vector<int> & HoughPoints);
-
-        void DrawVerticalBandDetection();
-        int  GetMaxArrayValue(std::vector<int> intArray);
-        void AnalyseBandBoundary();
-        void CreateIntensityRowProfileY();
-        void CreateRowProfileY(bool GraphicalOutput=false);
-        void CreateRowProfileX();
-        void CreateIntensityRowProfileX(bool GraphicalOutput=false);
-
-
-
-
-        std::vector<int> IntensityRowProfileX;
-        std::vector<int> IntensityRowProfileY;
-        std::vector<int> RowProfileX;
-        std::vector<int> RowProfileY;
-        std::vector<BandBoundary> BandBoundariesX;
-        std::vector<BandBoundary> BandBoundariesY;
+        /* Plate Detection Functions */
+        void ScoreDetectedRegion(ROI &Region, int EdgeThreshold = 10, int HeightThreshold = 20);
 
 
     private:
+
 
 };
 

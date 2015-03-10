@@ -12,10 +12,6 @@ NumberPlate::~NumberPlate()
 
 void NumberPlate::ProcessNumberPlate(){
 
-    ImageToAdaptiveMonochrome();
-    RefinePlateY();
-    VerticalBandDetection(RowProfileY, 1, 0.05);
-    DrawVerticalBandDetection();
 /*
     //ImageToBW(100, true); // Make the charactors white
     ImageToLocalisedMonochrome();
@@ -27,7 +23,7 @@ void NumberPlate::ProcessNumberPlate(){
 
 void NumberPlate::RefinePlateY(){
 
-    CreateRowProfileY();
+//    CreateRowProfileY();
 
 }
 

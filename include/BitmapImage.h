@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <cmath>
 #include "../SDL_Wrapper.h"
-#include "DataStructures.cpp"
+#include "../src/DataStructures.cpp"
 
 
 
@@ -17,49 +17,62 @@ class BitmapImage
         BitmapImage(); // Constructor
         virtual ~BitmapImage(); // Destructor
 
-        // Misc
-        void LoadImageFromFile(std::string Filename);
+        /* Image Loading/Saving Functions */
+        void LoadBitmapImage(std::string Filename);
+        void LoadBitmapImage(SDL_Surface* InputImage, Rectangle Rect);
         void SaveImageToFile(std::string Filename);
+        void RestoreToLoadedImage();
 
-    /* Allow these variables to be accessed by inheritied classes */
+    // Allow these variables to be accessed by inheritied classes
     protected:
         SDL_Surface* Image;
 
-        // Image editing functions
-        void ImageToGrayscale();
-        void SobelEdgeDetection();
-        void EdgeDetection();
+        /* Matrix Manipulation Functions */
+        void  ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions);
+        ConvolutionMatrix CannyX, CannyY;
+        ConvolutionMatrix HorizontalRank;
+
+        /* Line Drawing Functions */
+        void DrawLine(int x1, int y1, int x2, int y2, Uint8 R, Uint8 G, Uint8 B);
+        void DrawRectangle(int x, int y, int w, int h,  Uint8 R, Uint8 G, Uint8 B);
+        void DrawRectangle(Rectangle Rect, Uint8 R, Uint8 G, Uint8 B);
+
+        /* Whole Image Editing Function */
+        void ImageToBW(int Threshold = 200, bool Inverted = false);
         void CannyEdgeDetection();
+        void ImageToGrayscale();
         void NormaliseImage();
         void HistogramEqualisation();
-        void ImageToBW(int Threshold=200, bool Inverted=false);
         void ImageToAdaptiveMonochrome(int Area=30);
-        void ImageToLocalisedMonochrome(int Threshold=80);
-        void ImageGrayscaleToDifferentialMonochrome(int Difference=10);
-        void DrawLine(int x1, int y1, int x2, int y2,   Uint8 R, Uint8 G, Uint8 B);
-        void DrawRectangle(int x, int y, int w, int h,  Uint8 R, Uint8 G, Uint8 B);
-        void ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions);
-        ConvolutionMatrix SobelVertical, SobelHorizontal, GaussianBlur1, GaussianBlur2, GaussianBlur3, CannyX, CannyY;
-        ConvolutionMatrix EdgeHorizontal,Median, EdgeVertical, EdgeDetect3, EdgeDetect4, HorizontalRank, VerticalRank, Blur1;
+
+        /* Image Analysis Functions */
         void CreateGrayscaleMapArray();
-        void LocateHoughLines(std::vector<HoughPoint> & HoughPoints, float LengthThreshold=0.5);
-        void ThresholdHoughPoints(std::vector<int> & HoughPoints, float Threshold, Rect Area);
-    /* Don't allow these variables to be accessed by inheritied classes */
-    private:
-        // Core Arithmetic
+        int  GetGrayscaleMapValue(int x, int y);
+        std::vector<HoughPoint> LocateHoughPoints(float Threshold = 0.5);
         void CreateIntegralArray();
         int  GetIntegralValue(int x, int y);
         int  GetIntegralAreaAverage(int x, int y, int Area=12);
+
+
+
+
+    // Don't allow these variables to be accessed by inheritied classes
+    private:
+        SDL_Surface* LoadedImage;
+
+        /* Private Datastores */
+        std::vector<int> GrayscaleArray;
+        std::vector<int> IntegralArray;
+
+
+        /* Matrix Manipulation Functions */
         float  ProcessKernelFilter(int x, int y, ConvolutionMatrix Kernel);
-        int  GetGrayscaleMapValue(int x, int y);
 
-
+        /* Line Drawing Functions */
         void OrderCoordinates(int &x1, int &y1, int &x2, int &y2);
 
-        void InitialiseConvolutionMatrix(ConvolutionMatrix &Struct, int Columns, int Rows, float Weight, std::initializer_list<float> List);
-        std::vector<int> IntegralArray;
-        std::vector<int> GrayscaleArray;
-
+        /* Matrix Manipulation Functions */
+        void  InitialiseConvolutionMatrix(ConvolutionMatrix &Struct, int Columns, int Rows, float Weight, std::initializer_list<float> List);
 };
 
 #endif // BITMAPIMAGE_H

@@ -37,16 +37,18 @@
 		<Linker>
 			<Add option="-lSDLmain -lSDL -lSDL_image" />
 		</Linker>
-		<Unit filename="DataStructures.cpp" />
 		<Unit filename="SDL_Wrapper.cpp" />
 		<Unit filename="SDL_Wrapper.h" />
 		<Unit filename="include/ANPRImage.h" />
+		<Unit filename="include/AnalyseImage.h" />
 		<Unit filename="include/BitmapImage.h" />
-		<Unit filename="include/NumberPlate.h" />
+		<Unit filename="include/PlateCandidate.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/ANPRImage.cpp" />
+		<Unit filename="src/AnalyseImage.cpp" />
 		<Unit filename="src/BitmapImage.cpp" />
-		<Unit filename="src/NumberPlate.cpp" />
+		<Unit filename="src/DataStructures.cpp" />
+		<Unit filename="src/PlateCandidate.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

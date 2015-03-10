@@ -4,232 +4,84 @@ BitmapImage::BitmapImage(){
 
     // Create needed Convolution Matricies
     // This is done here to allow difference sizes of matrices in one datatype
-    InitialiseConvolutionMatrix(SobelHorizontal,    3, 3, 1,  {-1,  -2,  -1,     0,  0,  0,      1,  2,  1});
-    InitialiseConvolutionMatrix(SobelVertical,      3, 3, 1,  {-1,   0,  1,     -2,  0,  2,     -1,  0,  1});
-
     InitialiseConvolutionMatrix(CannyX,      3, 3, 1,  {-1,0,1,-2,0,2,-1,0,1});
     InitialiseConvolutionMatrix(CannyY,      3, 3, 1,  {-1,-2,-1,0,0,0,1,2,1});
-
-    InitialiseConvolutionMatrix(GaussianBlur1,      5, 5, 159,{2,4,5,4,2,4,9,12,9,4,5,12,15,12,5,4,9,12,9,4,2,4,5,4,2});
-    InitialiseConvolutionMatrix(GaussianBlur2,      3, 3, 16, {1, 2, 1, 2, 4, 2, 1, 2, 1});
-    InitialiseConvolutionMatrix(GaussianBlur3,      3, 3, 5,  {0, 1, 0, 1, 1, 1, 0, 1, 0});
     InitialiseConvolutionMatrix(HorizontalRank,     21, 3, 1,  { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                                                                 0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,
-                                                                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  });
-    InitialiseConvolutionMatrix(VerticalRank,       3, 25, 1,  {0,0.04,0,
-                                                                  0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,0,0.04,0,
-
-
-                                                                  });
-
-    InitialiseConvolutionMatrix(Blur1,              5, 5, 66,  {4,4,0,4,4,4,4,0,4,4,0,0,2,0,0,4,4,0,4,4,4,4,0,4,4});
-    InitialiseConvolutionMatrix(EdgeHorizontal,     5, 3, 1,  {-1,-1,-1,-1,-1,0,0,0,0,0,1,1,1,1,1});
-    InitialiseConvolutionMatrix(EdgeVertical,       3, 3, 1,  {-1,0,1,-1,0,1,-1,0,1});
-    InitialiseConvolutionMatrix(Median,             3, 3, 8,  {1, 1, 1, 1, 0, 1, 1, 1, 1});
-    InitialiseConvolutionMatrix(EdgeDetect4,        3, 3, 1,  {-1, -1, -1, 0, 0, 0, 1, 1, 1});
+                                                                0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,
+                                                                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  });
 
 }
 
 BitmapImage::~BitmapImage(){
     //dtor
-    IntegralArray.clear();
+    //IntegralArray.clear();
 }
 
-void BitmapImage::InitialiseConvolutionMatrix(ConvolutionMatrix &Struct, int Columns, int Rows, float Weight, std::initializer_list<float> List){
-    Struct.Columns   = Columns;
-    Struct.Rows      = Rows;
-    Struct.Weight    = Weight;
-    Struct.Matrix.insert( Struct.Matrix.end(), List ); // Requires C++11
-}
 
-void BitmapImage::OrderCoordinates(int &x1, int &y1, int &x2, int &y2){
-    if(x2 < x1){
-        int tx2 = x2;  // Temp
-        int ty2 = y2;
-        x2 = x1;
-        y2 = y1;
-        x1 = tx2;
-        y1 = ty2;
-    }
-}
-
-void BitmapImage::DrawLine(int x1, int y1, int x2, int y2, Uint8 R, Uint8 G, Uint8 B){
-    OrderCoordinates(x1, y1, x2, y2); // Make sure the largest is (x2,y2)
-    int dx = x2-x1;
-    int dy = y2-y1;
-    if(dx != 0){
-        for(int x = x1; x <= x2; x++){
-            int y = y1 + dy * (x - x1) / dx;
-            if( (y > 0 && y < Image->h) && (x > 0 && x < Image->w)){
-                SetRGBValues(Image, x, y, R, G, B);
-            }
-        }
-    }else{
-        for(int y=y1; y <= y2; y++){
-            if( (y > 0 && y < Image->h) && (x1 > 0 && x1 < Image->w)){
-                SetRGBValues(Image, x1, y, R, G, B);
-            }
-        }
-    }
-}
-
-void BitmapImage::DrawRectangle(int x, int y, int w, int h,  Uint8 R, Uint8 G, Uint8 B){
-    // Top Line _
-    DrawLine(x,   y,   x+w, y,   R, G, B);
-    // Bottom Line _
-    DrawLine(x,   y+h, x+w, y+h, R, G, B);
-    // Right Line |
-    DrawLine(x+w, y,   x+w, y+h, R, G, B);
-    // Left Line |
-    DrawLine(x,   y,   x,   y+h, R, G, B);
-}
-
-void BitmapImage::ImageToLocalisedMonochrome(int Threshold){
-    Uint8 R = 0, G = 0, B = 0;
-    for(int y = 0; y < Image->h; y++){
-		for(int x = 0; x < Image->w; x++){
-            // RGB of this pixel
-            GetRGBValues(Image, x, y, &R, &G, &B);
-            // Threshold of 80 to get good black
-            if( (R+G+B)/3 > Threshold ){
-                SetRGBValues(Image,x,y,255,255,255);
-            }else{
-                SetRGBValues(Image,x,y,0,0,0);
-            }
-		}
-	}
-}
-
-void BitmapImage::ImageToGrayscale(){
-    Uint8 R = 0, G = 0, B = 0;
-    int s = 0; // Sampled variable
-    for(int y = 0; y < Image->h; y++){
-        for(int x = 0; x < Image->w; x++){
-            GetRGBValues(Image, x, y, &R, &G, &B);
-            s = (0.299*R+0.587*G+0.114*B);
-            SetRGBValues(Image, x, y, s, s, s);
-        }
-    }
-}
-
-int  BitmapImage::GetIntegralValue(int x, int y){
-    if(x < 0 || y < 0){
-        return 0;       // The values are to the top/left of the image
-    }else{
-        return IntegralArray[(Image->w*y)+x];
-    }
-}
-
-void BitmapImage::CreateIntegralArray(){
-    Uint8 R = 0, G = 0, B = 0;
-    int element = 0;
-    IntegralArray.resize(Image->w*Image->h);
-    for(int y=0; y<Image->h; y++){
-        for(int x=0; x<Image->w; x++){
-            // Get values in x,y box from origin
-            // S(x,y) = i(x,y) + s(x-1,y) + s(x,y-1) - s(x-1,y-1) (To remove the repeated segment)
-            GetRGBValues(Image, x, y, &R, &G, &B);
-            IntegralArray[element] = R+G+B+GetIntegralValue(x-1,y)+GetIntegralValue(x,y-1)-GetIntegralValue(x-1, y-1);
-            element++; // Increase pixel location
-        }
-    }
-}
-
-int  BitmapImage::GetIntegralAreaAverage(int x, int y, int Area){
-    int a, b, c, d, i, o; // i = inside sitting | o = outside sitting
-
-    /*
-     If any of the boundaries go out of range area*area reposition (x,y)
-     to acheive the area*area average.
-    */
-    i = Area/2; // Rounded down
-    o = i+1;    // Offset by 1
-
-    if(x+i > Image->w){
-        x -= abs(Image->w-x-i); // Gone off the grid to the RIGHT
-    }
-
-    if(y+i > Image->h){
-        y -= abs(Image->h-y-i); // Gone off the grid to the BOTTOM
-    }
-
-    if(x-o < 0){
-        x += abs(x-o); // Gone off the grid to the LEFT
-    }
-
-    if(y-o < 0){
-        y += abs(y-o); // Gone off the grid to the TOP
-    }
-
-
-    // Calculate the memory reads
-    a = GetIntegralValue(x-o, y-o);
-    c = GetIntegralValue(x-o, y+i);
-    b = GetIntegralValue(x+i, y-o);
-    d = GetIntegralValue(x+i, y+i);
-
-    // Return the Average
-    return (a+d-c-b)/((Area*Area)+Area);
-}
-
-void BitmapImage::ImageToAdaptiveMonochrome(int SampleArea){
-    Uint8 R = 0, G = 0, B = 0;
-    int AverageIntensity, PixelIntensity;
-    CreateIntegralArray(); // Create the Integral Array
-    for(int y = 0; y < Image->h; y++){
-        for(int x = 0; x < Image->w; x++){
-        // Get average intensity around pixel
-        AverageIntensity = GetIntegralAreaAverage(x, y, SampleArea);
-        GetRGBValues(Image, x, y, &R, &G, &B);
-        PixelIntensity = R+G+B;
-        if( PixelIntensity > AverageIntensity ){
-            SetRGBValues(Image,x,y,255,255,255); // White
-        }else{
-            SetRGBValues(Image,x,y,0,0,0);  // Black
-        }
-        }
-    }
-
-}
-
-void BitmapImage::ImageGrayscaleToDifferentialMonochrome(int Difference){
-    Uint8 R = 0, G = 0, B = 0;
-    // Do two consectutive pixels have a high difference in grayscale?
-    int LastPixel, Pixel;
-    for(int y = 0; y < Image->h; y++){
-        GetRGBValues(Image, 0, y, &R, &G, &B); // First pixel in row
-        LastPixel = R; // Image is grayscale so only have to look at one value
-        for(int x = 1; x < Image->w; x++){
-            GetRGBValues(Image, x, y, &R, &G, &B);
-            Pixel = R;
-
-            // Is there a large difference
-            if(abs(LastPixel - Pixel) > Difference){
-                // Replace last pixel with black
-                SetRGBValues(Image, x-1, y, 0, 0, 0);
-            }else{
-                SetRGBValues(Image, x-1, y, 255, 255, 255);
-            }
-            LastPixel = Pixel;
-        }
-    }
-
-}
-
+/* Image Loading/Saving Functions */
 void BitmapImage::SaveImageToFile(std::string Filename){
     SaveImageBMP(Image, Filename.c_str());
 }
 
-void BitmapImage::LoadImageFromFile(std::string Filename){
+void BitmapImage::LoadBitmapImage(std::string Filename){
     Image = LoadImage(Filename.c_str());
     // Check
     if(Image == NULL){
         std::cerr << "Cannot load " << Filename << std::endl;
         std::exit(1);
     }
+    LoadedImage = Image; // Duplicate Loaded Image
 }
 
-void BitmapImage::ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions){
+void BitmapImage::LoadBitmapImage(SDL_Surface* InputImage, Rectangle Rect){
+    Uint8 R = 0, G = 0, B = 0;
+    Image = CreateNewImage(Rect.Width, Rect.Height);
+    // Map pixels to new image
+    for(int y = 0; y < Rect.Height; y++){
+        for(int x = 0; x < Rect.Width; x++){
+            GetRGBValues(InputImage, Rect.x+x, Rect.y+y, &R, &G, &B);
+            SetRGBValues(Image, x, y, R, G, B);
+        }
+    }
+    LoadedImage = Image; // Duplicate Loaded Image
+}
+
+void BitmapImage::RestoreToLoadedImage(){
+    Image = LoadedImage;
+}
+
+
+/* Matrix Manipulation Functions */
+void  BitmapImage::InitialiseConvolutionMatrix(ConvolutionMatrix &Struct, int Columns, int Rows, float Weight, std::initializer_list<float> List){
+    Struct.Columns   = Columns;
+    Struct.Rows      = Rows;
+    Struct.Weight    = Weight;
+    Struct.Matrix.insert( Struct.Matrix.end(), List ); // Requires C++11
+}
+
+float BitmapImage::ProcessKernelFilter(int x, int y, ConvolutionMatrix Kernel){
+
+        float Total = 0;
+
+        // Integer Division
+        int h = Kernel.Columns/2;
+        int v = Kernel.Rows/2;
+
+        // m = rows | n = columns
+        for(int m=0; m < Kernel.Rows; m++){
+            for(int n=0; n < Kernel.Columns; n++){
+
+                //std::cout << GetGrayscaleMapValue(x-h+n, y-v+m) << std::endl;
+                Total += GetGrayscaleMapValue(x-h+n, y-v+m) * Kernel.Matrix[ ((Kernel.Columns)*m) + n ];
+
+            }
+            //std::cout << m << ",";
+        }
+
+        return abs(Total/Kernel.Weight);    // Round to INT
+}
+
+void  BitmapImage::ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions){
     // ALways Create a Grayscale Array for the current state
     CreateGrayscaleMapArray();
 
@@ -264,49 +116,58 @@ void BitmapImage::ImageConvolutionMatrixTransformation(std::vector<ConvolutionMa
 
 }
 
-void BitmapImage::CreateGrayscaleMapArray(){
-    Uint8 R = 0, G = 0, B = 0;
-    GrayscaleArray.resize(Image->w*Image->h);
-    int Element = 0;
-    for(int y = 0; y < Image->h; y++){
-        for(int x = 0; x < Image-> w; x++){
-            GetRGBValues(Image, x, y, &R, &G, &B);
-            GrayscaleArray[Element] = R;
-            Element++;
-        }
+
+/* Line Drawing Functions */
+void BitmapImage::OrderCoordinates(int &x1, int &y1, int &x2, int &y2){
+    if(x2 < x1){
+        int tx2 = x2;  // Temp
+        int ty2 = y2;
+        x2 = x1;
+        y2 = y1;
+        x1 = tx2;
+        y1 = ty2;
     }
 }
 
-int  BitmapImage::GetGrayscaleMapValue(int x, int y){
-    if(x < 0 || y < 0 || x > Image->w-1 || y > Image->h-1){
-        return 0;       // The values are to the top/left of the image
-    }else{
-        return GrayscaleArray[(Image->w*y)+x];
-    }
-}
-
-float  BitmapImage::ProcessKernelFilter(int x, int y, ConvolutionMatrix Kernel){
-
-        float Total = 0;
-
-        // Integer Division
-        int h = Kernel.Columns/2;
-        int v = Kernel.Rows/2;
-
-        // m = rows | n = columns
-        for(int m=0; m < Kernel.Rows; m++){
-            for(int n=0; n < Kernel.Columns; n++){
-
-                //std::cout << GetGrayscaleMapValue(x-h+n, y-v+m) << std::endl;
-                Total += GetGrayscaleMapValue(x-h+n, y-v+m) * Kernel.Matrix[ ((Kernel.Columns)*m) + n ];
-
+void BitmapImage::DrawLine(int x1, int y1, int x2, int y2, Uint8 R, Uint8 G, Uint8 B){
+    OrderCoordinates(x1, y1, x2, y2); // Make sure the largest is (x2,y2)
+    int dx = x2-x1;
+    int dy = y2-y1;
+    if(dx != 0){
+        for(int x = x1; x <= x2; x++){
+            int y = y1 + dy * (x - x1) / dx;
+            if( (y > 0 && y < Image->h) && (x > 0 && x < Image->w)){
+                SetRGBValues(Image, x, y, R, G, B);
             }
-            //std::cout << m << ",";
         }
-
-        return abs(Total/Kernel.Weight);    // Round to INT
+    }else{
+        for(int y=y1; y <= y2; y++){
+            if( (y > 0 && y < Image->h) && (x1 > 0 && x1 < Image->w)){
+                SetRGBValues(Image, x1, y, R, G, B);
+            }
+        }
+    }
 }
 
+void BitmapImage::DrawRectangle(Rectangle Rect, Uint8 R, Uint8 G, Uint8 B){
+    // Overload to allow more readable code
+    DrawRectangle(Rect.x, Rect.y, Rect.Width, Rect.Height, R, G, B);
+}
+
+void BitmapImage::DrawRectangle(int x, int y, int w, int h,  Uint8 R, Uint8 G, Uint8 B){
+    // Top Line _
+    DrawLine(x,   y,   x+w, y,   R, G, B);
+    // Bottom Line _
+    DrawLine(x,   y+h, x+w, y+h, R, G, B);
+    // Right Line |
+    DrawLine(x+w, y,   x+w, y+h, R, G, B);
+    // Left Line |
+    DrawLine(x,   y,   x,   y+h, R, G, B);
+}
+
+
+
+/* Whole Image Editing Function */
 void BitmapImage::ImageToBW(int Threshold, bool Inverted){
     Uint8 R = 0, G = 0, B = 0;
     for(int y = 0; y < Image->h; y++){
@@ -429,6 +290,18 @@ void BitmapImage::CannyEdgeDetection(){
 
 }
 
+void BitmapImage::ImageToGrayscale(){
+    Uint8 R = 0, G = 0, B = 0;
+    int s = 0; // Sampled variable
+    for(int y = 0; y < Image->h; y++){
+        for(int x = 0; x < Image->w; x++){
+            GetRGBValues(Image, x, y, &R, &G, &B);
+            s = (0.299*R+0.587*G+0.114*B);
+            SetRGBValues(Image, x, y, s, s, s);
+        }
+    }
+}
+
 void BitmapImage::NormaliseImage(){
     CreateGrayscaleMapArray();
     int iMin = 255, iMax = 0, nMin = 0, nMax = 100, Intensity, NewIntensity;
@@ -495,45 +368,157 @@ void BitmapImage::HistogramEqualisation(){
     }
 }
 
-void BitmapImage::LocateHoughLines(std::vector<HoughPoint> & HoughPoints, float LengthThreshold){
-    CreateGrayscaleMapArray();
-    int MaxCount = 0, r = 0;
-
-    // Create voting matrix
-
-    int MaxLineLength = sqrt(Image->h*Image->h + Image->w*Image->w)+5;
-    std::vector<std::vector<int>> VotingMatrix;
-    VotingMatrix.resize( 180  , std::vector<int>( MaxLineLength*2 , 0 ) );
-
-   // auto *VotingMatrix = new int[180][750];
-
-    // Go through image computing angles for each edge
+void BitmapImage::ImageToAdaptiveMonochrome(int SampleArea){
+    Uint8 R = 0, G = 0, B = 0;
+    int AverageIntensity, PixelIntensity;
+    CreateIntegralArray(); // Create the Integral Array
     for(int y = 0; y < Image->h; y++){
         for(int x = 0; x < Image->w; x++){
-
-            if(GetGrayscaleMapValue(x, y) > 250){
-               for(int t = 0; t < 180; t++){
-                // Add r to accumulator
-                r = (x*cos(t*0.017432925) + y*sin(t*0.0174532925))+MaxLineLength; // So negative MaxLineLength == VM(t,0)
-                VotingMatrix[t][r]++;
-                if( VotingMatrix[t][r] > MaxCount )
-                    MaxCount = VotingMatrix[t][r];
-
-               }
-            }
-
+        // Get average intensity around pixel
+        AverageIntensity = GetIntegralAreaAverage(x, y, SampleArea);
+        GetRGBValues(Image, x, y, &R, &G, &B);
+        PixelIntensity = R+G+B;
+        if( PixelIntensity > AverageIntensity ){
+            SetRGBValues(Image,x,y,255,255,255); // White
+        }else{
+            SetRGBValues(Image,x,y,0,0,0);  // Black
+        }
         }
     }
 
-    // Cleanup Found Lines
-    HoughPoint HPoint; // Temp Struct
-    for(int t=0; t < 180; t++){
-        for(int r=0; r < MaxLineLength*2; r++){
-            if((VotingMatrix[t][r] > MaxCount*LengthThreshold)){
-                HPoint.t = t;
-                HPoint.r = r-MaxLineLength; // Allow negative rhos
-                HoughPoints.push_back(HPoint);
-            }
+}
+
+/* Image Analysis Functions */
+void BitmapImage::CreateGrayscaleMapArray(){
+    Uint8 R = 0, G = 0, B = 0;
+    GrayscaleArray.resize(Image->w*Image->h);
+    int Element = 0;
+    for(int y = 0; y < Image->h; y++){
+        for(int x = 0; x < Image-> w; x++){
+            GetRGBValues(Image, x, y, &R, &G, &B);
+            GrayscaleArray[Element] = R;
+            Element++;
         }
     }
 }
+
+int  BitmapImage::GetGrayscaleMapValue(int x, int y){
+    // Do we need to create a map of grayscale values?
+    if(GrayscaleArray.size() != Image->w*Image->h){
+        CreateGrayscaleMapArray();
+    }
+    if(x < 0 || y < 0 || x > Image->w-1 || y > Image->h-1){
+        return 0;       // The values are to the top/left of the image
+    }else{
+        return GrayscaleArray[(Image->w*y)+x];
+    }
+}
+
+std::vector<HoughPoint> BitmapImage::LocateHoughPoints(float Threshold){
+
+    // Initialise persistant variables
+    static std::vector<std::vector<int>> VotingMatrix;
+    static int MaxLineLength;
+    static int MaxVotingCount;
+
+    if(VotingMatrix.size() == 0){
+        CreateGrayscaleMapArray(); // Ensure we have a grayscale image
+        int r = 0;
+
+        // Create voting matrix
+        MaxLineLength = sqrt(Image->h*Image->h + Image->w*Image->w)+5;
+        VotingMatrix.resize( 180  , std::vector<int>( MaxLineLength*2 , 0 ) );
+
+        // Go through image computing angles for each edge
+        for(int y = 0; y < Image->h; y++){
+            for(int x = 0; x < Image->w; x++){
+                if(GetGrayscaleMapValue(x, y) > 250){
+                    for(int t = 0; t < 180; t++){
+                        r = (x*cos(t*0.017432925) + y*sin(t*0.0174532925))+MaxLineLength; // So negative MaxLineLength == VM(t,0)
+                        VotingMatrix[t][r]++; // Add to accumulator
+                        if( VotingMatrix[t][r] > MaxVotingCount ){
+                            MaxVotingCount = VotingMatrix[t][r];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Apply thresholding, the VotingMatrix was created just now or in the last function call
+    std::vector<HoughPoint> ThresholdPoints;
+    HoughPoint HPoint; // Temp Struct
+    for(int t=0; t < 180; t++){
+        for(int r=0; r < VotingMatrix[t].size(); r++){
+            if((VotingMatrix[t][r] > MaxVotingCount*Threshold)){
+                HPoint.t = t;
+                HPoint.r = r-MaxLineLength; // Allow negative rhos
+                ThresholdPoints.push_back(HPoint);
+            }
+        }
+    }
+
+    // Return vector of Hough Points with applied threshold
+    return ThresholdPoints;
+}
+
+void BitmapImage::CreateIntegralArray(){
+    Uint8 R = 0, G = 0, B = 0;
+    int element = 0;
+    IntegralArray.resize(Image->w*Image->h);
+    for(int y=0; y<Image->h; y++){
+        for(int x=0; x<Image->w; x++){
+            // Get values in x,y box from origin
+            // S(x,y) = i(x,y) + s(x-1,y) + s(x,y-1) - s(x-1,y-1) (To remove the repeated segment)
+            GetRGBValues(Image, x, y, &R, &G, &B);
+            IntegralArray[element] = R+G+B+GetIntegralValue(x-1,y)+GetIntegralValue(x,y-1)-GetIntegralValue(x-1, y-1);
+            element++; // Increase pixel location
+        }
+    }
+}
+
+int  BitmapImage::GetIntegralValue(int x, int y){
+    if(x < 0 || y < 0){
+        return 0;       // The values are to the top/left of the image
+    }else{
+        return IntegralArray[(Image->w*y)+x];
+    }
+}
+
+int  BitmapImage::GetIntegralAreaAverage(int x, int y, int Area){
+    int a, b, c, d, i, o; // i = inside sitting | o = outside sitting
+
+    /*
+     If any of the boundaries go out of range area*area reposition (x,y)
+     to acheive the area*area average.
+    */
+    i = Area/2; // Rounded down
+    o = i+1;    // Offset by 1
+
+    if(x+i > Image->w){
+        x -= abs(Image->w-x-i); // Gone off the grid to the RIGHT
+    }
+
+    if(y+i > Image->h){
+        y -= abs(Image->h-y-i); // Gone off the grid to the BOTTOM
+    }
+
+    if(x-o < 0){
+        x += abs(x-o); // Gone off the grid to the LEFT
+    }
+
+    if(y-o < 0){
+        y += abs(y-o); // Gone off the grid to the TOP
+    }
+
+
+    // Calculate the memory reads
+    a = GetIntegralValue(x-o, y-o);
+    c = GetIntegralValue(x-o, y+i);
+    b = GetIntegralValue(x+i, y-o);
+    d = GetIntegralValue(x+i, y+i);
+
+    // Return the Average
+    return (a+d-c-b)/((Area*Area)+Area);
+}
+
