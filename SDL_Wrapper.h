@@ -61,6 +61,8 @@ void CloseWindow();
 // Display Surface
 void DisplaySurface(SDL_Surface * SurfaceToDisplay);
 
+void DisplaySurfaceUntilClose(SDL_Surface* Surface);
+
 
 /* Don't call the following functions unless you know what you are doing! */
 

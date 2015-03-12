@@ -12,11 +12,16 @@
 int main(){
 
     // Load Image
-    std::string Location = "005.jpg";
+    for(int i=1; i < 6; i++){
 
-    ANPRImage InputImage;
-    InputImage.LoadBitmapImage(Location);
-    InputImage.ProcessGlobalImage();
+        std::string Location = "00" + std::to_string(i) + ".jpg";
+        std::cout << "Processing: " << Location << std::endl;
+        ANPRImage InputImage;
+        InputImage.LoadBitmapImage(Location);
+        InputImage.ProcessGlobalImage(100);
+
+    }
+
 
     return 0;
 }

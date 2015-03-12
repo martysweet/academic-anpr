@@ -5,7 +5,12 @@ ANPRImage::ANPRImage(){
 
 }
 
-void ANPRImage::ProcessGlobalImage(){
+/*
+    This function takes the raw input image, and will initiate other processes before returning the number plate.
+    1) Convert Image for detection
+    2) Detect wide regions of the image
+*/
+void ANPRImage::ProcessGlobalImage(int MinimumBandHeight){
     // Convert the image to Grayscale
     ImageToGrayscale();
 
@@ -21,20 +26,10 @@ void ANPRImage::ProcessGlobalImage(){
     StartingRegion.Rect.y = 0;
     StartingRegion.Rect.Height = Image->h;
     StartingRegion.Rect.Width  = Image->w;
-    std::vector<ROI> Regions = HoughHorizontalBandDetection(StartingRegion, 0.5, 150);  // Find good horizontal band candidates
+    std::vector<ROI> Regions = HoughHorizontalBandDetection(StartingRegion, 0.5, MinimumBandHeight);  // Find good horizontal band candidates
 
     // Debug message
-    std::cout << " >> Step 1: Found " << Regions.size() << " regions for analysis" << std::endl;
-    for(int i = 0; i < Regions.size(); i++){
-            std::cout << "  >> y0: " << Regions[i].Rect.y << " -> " << Regions[i].Rect.y+Regions[i].Rect.Height << std::endl;
-           /* std::vector<ROI> Regions2 = HoughHorizontalBandDetection(Regions[i], 0.4, 70);
-            std::cout << "   >> Recurse: Found " << Regions2.size() << " regions for analysis" << std::endl;
-            DrawLine(10, Regions[i].Rect.y, 10, Regions[i].Rect.y+Regions[i].Rect.Height, 255, 0, 255);
-            for(int k = 0; k < Regions2.size(); k++){
-                std::cout << "    >> y0: " << Regions2[i].Rect.y << " -> " << Regions2[i].Rect.y+Regions2[i].Rect.Height << std::endl;
-                DrawLine(20+k, Regions2[i].Rect.y, 20+k, Regions2[i].Rect.y+Regions2[i].Rect.Height, 255, 0, 0);
-            }*/
-    }
+    std::cout << " >> Global Image Banding: Found " << Regions.size() << " regions for analysis" << std::endl;
 
 
     // Compute a score for each ROI
@@ -42,23 +37,48 @@ void ANPRImage::ProcessGlobalImage(){
         // Reset the image and preform a RowProfile
         RestoreToLoadedImage();
         ImageToGrayscale();
+        // Horizontal rank to improve row profile
         std::vector< ConvolutionMatrix > MyFilters;
         MyFilters.push_back(HorizontalRank);
         ImageConvolutionMatrixTransformation(MyFilters);
         CreateRowProfile();    // Create y-axis edge profile for whole image
+
+        // We need to give each of these internal regions a score
         for(int i = 0; i < Regions.size(); i++){
-            ScoreDetectedRegion(Regions[i]);
+            std::cout << "  >> Detecting plates within:  y0: " << Regions[i].Rect.y << " -> " << Regions[i].Rect.y+Regions[i].Rect.Height << std::endl;
+            // Get list of Peaks from row profile analysis
+            std::vector<ProjectionAnalysis> PeakRegions = RefineDetectedRegion(Regions[i]);
+            // Check for a plate within each region
+            for(int i=0; i < PeakRegions.size(); i++){
+                std::cout << "   >> Refined Band Candidate " << i << " Score: " << PeakRegions[i].Score << std::endl;
+                RefinePotentialPlateBand(PeakRegions[i]);
+            }
         }
+
+
+    }else{
+        // We haven't found numberplate
+
     }
+
+
 
     // Save the image for testing
     SaveImageToFile("output.bmp");
 
 }
 
-void ANPRImage::ScoreDetectedRegion(ROI & Region, int EdgeThreshold, int HeightThreshold){
+std::vector<ProjectionAnalysis> ANPRImage::RefineDetectedRegion(ROI & Region, int EdgeThreshold, int HeightThreshold){
     // Detect region with high peaks (hopefully the numberplate)
     std::vector<ProjectionAnalysis> PeakRegions = AnalyseAxisPeakProfile(RowProfile, Region, 'Y', 2, 0.55);
+
+    // Drop regions below HeightThreshold
+    for(int i = 0; i < PeakRegions.size(); i++){
+        if(PeakRegions[i].Height() < HeightThreshold){
+            PeakRegions.erase(PeakRegions.begin()+i);
+            i--;
+        }
+    }
 
     for(int i = 0; i < PeakRegions.size(); i++){
         // Lets score
@@ -66,7 +86,6 @@ void ANPRImage::ScoreDetectedRegion(ROI & Region, int EdgeThreshold, int HeightT
         PA.Score += 0.15 * abs(PA.Lower.Coordinate - PA.Upper.Coordinate);  // Smallest Height
         PA.Score += 0.25 * PA.Middle.Value;                                 // Peak Value
         PA.Score += 0.40 * PA.Area;                                         // Area bounded by Lower -> Upper
-        std::cout << "   >> Candidate Score: " << PA.Middle.Coordinate << " " << PA.Area << " - Score: " << PA.Score << std::endl;
     }
 
     // Order by Score
@@ -74,10 +93,20 @@ void ANPRImage::ScoreDetectedRegion(ROI & Region, int EdgeThreshold, int HeightT
                                                             return a.Score > b.Score; // Requires C++11
                                                         });                           // Makes high scores first
 
+    // Now we have an ordered list of vector<ProjectionAnalysis>
+    return PeakRegions;
+}
 
-    for(int i = 0; i < 1; i++){
-        ProjectionAnalysis &PA = PeakRegions[i]; // Temp Pointer
+/*
+    // Lets output to the user using SDL_Surfaces
+    CreateWindowFlags("Hough Line Banding", Image->w, Image->h, 0);
+    DisplaySurfaceUntilClose(Image);
+    CloseWindow();
+    */
 
+void ANPRImage::RefinePotentialPlateBand(ProjectionAnalysis PA){
+
+        // Create a region for refinement
         ROI TempRegion;
         TempRegion.Rect.x = 0;
         TempRegion.Rect.y = PA.Lower.Coordinate;
@@ -87,22 +116,33 @@ void ANPRImage::ScoreDetectedRegion(ROI & Region, int EdgeThreshold, int HeightT
         // Refine estimates
         std::vector<ProjectionAnalysis> PeakRegionsRefined = AnalyseAxisPeakProfile(RowProfile, TempRegion, 'Y', 1, 0.6);
 
-        // Define rough plate region
+        // Define rough plate region (adding padding)
         Rectangle PlateRect;
         PlateRect.x      = 0;
-        PlateRect.y      = PeakRegionsRefined[0].Lower.Coordinate-5;
+        PlateRect.y      = PeakRegionsRefined[0].Lower.Coordinate-10;
         PlateRect.Width  = Image->w;
-        PlateRect.Height = (PeakRegionsRefined[0].Upper.Coordinate - PeakRegionsRefined[0].Lower.Coordinate)+10;
+        PlateRect.Height = (PeakRegionsRefined[0].Upper.Coordinate - PeakRegionsRefined[0].Lower.Coordinate)+20;
+
+        // Cleanup potential over/under flows
+        if(PlateRect.y + PlateRect.Height > Image->h) {
+            PlateRect.Height -= abs(Image->h - (PlateRect.y + PlateRect.Height)); // Take away the exact amount over it is
+        }
+        if(PlateRect.y < 0){
+            PlateRect.y = PeakRegionsRefined[0].Lower.Coordinate;
+        }
 
         // Lets see if this plate candidate is viable
-        RestoreToLoadedImage();
+      /*  RestoreToLoadedImage();
         PlateCandidate Plate;
         Plate.LoadBitmapImage(Image, PlateRect);
-        Plate.AnalysePlate();
-
-
-
-        std::cout << "   >> Candidate Score: " << PA.Middle.Coordinate << " " << PA.Area << " - Score: " << PA.Score << std::endl;
-    }
+        Plate.AnalysePlate();*/
 
 }
+
+void ANPRImage::ExtractPotentialPlateRegion(ProjectionAnalysis PA){
+
+
+
+
+}
+

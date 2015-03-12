@@ -368,7 +368,7 @@ void BitmapImage::HistogramEqualisation(){
     }
 }
 
-void BitmapImage::ImageToAdaptiveMonochrome(int SampleArea){
+void BitmapImage::ImageToAdaptiveMonochrome(int SampleArea, bool Inverted){
     Uint8 R = 0, G = 0, B = 0;
     int AverageIntensity, PixelIntensity;
     CreateIntegralArray(); // Create the Integral Array
@@ -378,11 +378,23 @@ void BitmapImage::ImageToAdaptiveMonochrome(int SampleArea){
         AverageIntensity = GetIntegralAreaAverage(x, y, SampleArea);
         GetRGBValues(Image, x, y, &R, &G, &B);
         PixelIntensity = R+G+B;
+
         if( PixelIntensity > AverageIntensity ){
-            SetRGBValues(Image,x,y,255,255,255); // White
+            if(Inverted == false){
+                SetRGBValues(Image,x,y,255,255,255); // White
+            }else{
+                SetRGBValues(Image,x,y,0,0,0);  // Black
+            }
         }else{
-            SetRGBValues(Image,x,y,0,0,0);  // Black
+            if(Inverted == false){
+                SetRGBValues(Image,x,y,0,0,0);  // Black
+            }else{
+                SetRGBValues(Image,x,y,255,255,255); // White
+            }
         }
+
+
+
         }
     }
 

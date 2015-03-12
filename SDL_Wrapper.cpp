@@ -309,3 +309,47 @@ SDL_Surface* GetWindowSurface()
 {
 	return Window;
 }
+
+void DisplaySurfaceUntilClose(SDL_Surface* Surface)
+{
+	int open = 1; // In C++, one would ordinarily use bool for this. In C, something like this has to be used.
+	SDL_Event event;
+
+	// Display the image in the window
+	DisplaySurface(Surface);
+
+	// While we aren't closing the window...
+	while (open == 1)
+	{
+		if (SDL_PollEvent(&event))
+		{
+			// Close the window if it is closed
+			if (CheckClosePressed(&event))
+			{
+				open = 0;
+				continue;
+			}
+
+			/* This switch statement shows an example of how to check keys that the user has pressed. Most keys on a keyboard can be checked using the SDLK_<key> enum values,
+			   for instance SDLK_q specifies the 'q' key, or SDLK_RETURN specifies the return/enter key (not the one on the number pad).
+
+			   If you are interested, many other events can be checked; however you will have to research the SDL 1.2 documentation yourself! */
+			switch (event.type)
+			{
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE:
+					open = 0;
+					break;
+				default:
+					break;
+				}
+
+				break;
+			default:
+				break;
+			}
+		}
+	}
+}

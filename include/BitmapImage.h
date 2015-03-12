@@ -43,7 +43,7 @@ class BitmapImage
         void ImageToGrayscale();
         void NormaliseImage();
         void HistogramEqualisation();
-        void ImageToAdaptiveMonochrome(int Area=30);
+        void ImageToAdaptiveMonochrome(int Area=30, bool Inverted = false);
 
         /* Image Analysis Functions */
         void CreateGrayscaleMapArray();

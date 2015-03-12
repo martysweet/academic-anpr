@@ -15,16 +15,16 @@
 	<stdio.h>
 	<string.h>
 
-1424814765 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/SDL_Wrapper.cpp
+1426000449 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/SDL_Wrapper.cpp
 	"SDL_Wrapper.h"
 	<stdio.h>
 	<string.h>
 
-1424809468 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/SDL_Wrapper.h
+1426000517 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/SDL_Wrapper.h
 	"SDL/SDL.h"
 	"SDL/SDL_image.h"
 
-1425830228 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/main.cpp
+1426190205 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/main.cpp
 	<iostream>
 	<string>
 	<vector>
@@ -34,7 +34,7 @@
 	"include/ANPRImage.h"
 	"include/PlateCandidate.h"
 
-1425830026 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/BitmapImage.h
+1426056042 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/BitmapImage.h
 	<vector>
 	<string>
 	<iostream>
@@ -43,7 +43,7 @@
 	"../SDL_Wrapper.h"
 	"../src/DataStructures.cpp"
 
-1425830945 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/BitmapImage.cpp
+1426056135 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/BitmapImage.cpp
 	"BitmapImage.h"
 
 1425673502 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/NumberPlate.cpp
@@ -53,7 +53,7 @@
 	"BitmapImage.h"
 	"ANPRImage.h"
 
-1425830314 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/ANPRImage.h
+1426191182 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/ANPRImage.h
 	<vector>
 	<sstream>
 	<algorithm>
@@ -61,28 +61,29 @@
 	"AnalyseImage.h"
 	"PlateCandidate.h"
 
-1425933435 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/ANPRImage.cpp
+1426102407 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/ANPRImage.cpp
 	"ANPRImage.h"
 
-1425933516 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/DataStructures.cpp
+1426191066 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/DataStructures.cpp
 	<vector>
 
-1425933401 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/DataStructures.cpp
+1426191066 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/DataStructures.cpp
 	<vector>
 
-1425830556 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/PlateCandidate.h
+1425999067 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/PlateCandidate.h
 	<vector>
+	<cmath>
 	"../src/DataStructures.cpp"
 	<AnalyseImage.h>
 
-1425926582 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/PlateCandidate.cpp
+1426056972 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/PlateCandidate.cpp
 	"PlateCandidate.h"
 
-1425933424 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/AnalyseImage.h
+1425998489 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/AnalyseImage.h
 	<algorithm>
 	<vector>
 	<BitmapImage.h>
 
-1425933398 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/AnalyseImage.cpp
+1426191026 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/AnalyseImage.cpp
 	"AnalyseImage.h"
 

@@ -14,17 +14,17 @@ class ANPRImage: public AnalyseImage  {
     public:
         ANPRImage();
         /* Callable Functions */
-        void ProcessGlobalImage();
+        void ProcessGlobalImage(int MinimumBandHeight);
 
 
     protected:
 
         /* Plate Detection Functions */
-        void ScoreDetectedRegion(ROI &Region, int EdgeThreshold = 10, int HeightThreshold = 20);
+        std::vector<ProjectionAnalysis> RefineDetectedRegion(ROI &Region, int EdgeThreshold = 10, int HeightThreshold = 70);
 
 
     private:
-
+        void RefinePotentialPlateBand(ProjectionAnalysis PA);
 
 };
 

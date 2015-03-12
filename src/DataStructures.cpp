@@ -50,16 +50,20 @@ struct ProjectionAnalysis {
     ProjectionProfileResult Lower;
     ProjectionProfileResult Middle;
     ProjectionProfileResult Upper;
-    int Area = 0;
+    int Area = 0;      // Would be good to replace these with functions
+  //  int Height = 0;    // if possible.
     float Score = 0;
+    int Height(){
+        return Upper.Coordinate-Lower.Coordinate;
+    }
 };
+
+
 
 struct AverageGrouping {
     int Start = -1;
     int End = -1;
-    int Length(){
-        return End-Start;
-    }
+    int Length = 0;
 };
 
 
