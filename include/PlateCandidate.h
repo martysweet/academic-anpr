@@ -5,6 +5,7 @@
 #include <cmath>
 #include "../src/DataStructures.cpp"
 #include <DisjointSet.h>
+#include <set>
 
 #include <AnalyseImage.h>
 class PlateCandidate :  public AnalyseImage {

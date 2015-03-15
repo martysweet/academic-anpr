@@ -46,6 +46,8 @@ int DisjointSet::Union(int a, int b){
     // Return new merged set
     return nID;
 }
+
+
 /*
     USAGE::
     DisjointSet MappingSet;

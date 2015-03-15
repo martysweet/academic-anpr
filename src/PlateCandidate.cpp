@@ -50,6 +50,10 @@ void PlateCandidate::AnalysePlate(){
             PixelValue = GetGrayscaleMapValue(x, y);
             PixelIdent = (Image->w*y)+x; // Position of pixel in PixelToLabelMap
 
+            if(PixelValue == 0){
+                continue; // Skip pixel if its background
+            }
+
             // Find Neighbours ( NEIGH THE HOUSE BELLOWED ACROSS THE FIELD)
             if(GetGrayscaleMapValue((x-1), y) == PixelValue){ // West Check
                 // Assign the label from the pixel we checked
@@ -73,6 +77,48 @@ void PlateCandidate::AnalysePlate(){
             }
         }
     }
+
+    // Merge temporary assignments
+    std::set<int> UniqueLabels; // Set used for unique assignment
+    std::map<int,int> BlobPixelCount;
+    for(int y = 0; y < Image->h; y++){
+        for(int x = 0; x < Image->w; x++){
+            // Pixel dependant variables
+            PixelValue = GetGrayscaleMapValue(x, y);
+            PixelIdent = (Image->w*y)+x; // Position of pixel in PixelToLabelMap
+
+            if(PixelValue == 0){
+                continue; // Skip pixel if its background
+            }else{
+                int Label = MappingSet.Find(PixelToLabelMap[PixelIdent]); // Find Parent Set
+                PixelToLabelMap[PixelIdent] = Label;    // Set to parent Set
+                UniqueLabels.insert(Label);             // Add to unique list
+                if(BlobPixelCount.find(Label) == BlobPixelCount.end()){
+                    BlobPixelCount[Label] = 1; // Create the element is needed
+                }else{
+                    BlobPixelCount[Label]++;
+                }
+            }
+        }
+    }
+
+
+
+
+    // Create a counting matrix for each set
+
+  /*  for(std::set<int>::iterator it=UniqueLabels.begin(); it != UniqueLabels.end(); it++){
+
+        // Count the amount of occurances in PixelInLabelMap
+        int OccuranceCount = std::count(PixelToLabelMap.begin(), PixelToLabelMap.end(), *it);
+        if(OccuranceCount > 20){ // Amount of pixels in grouping
+            BlobPixelCount[*it] = OccuranceCount;
+        }
+
+    }*/
+
+
+
 
 
     CreateWindowFlags("Plate Candidate CCA", Image->w, Image->h, 0);
