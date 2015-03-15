@@ -24,7 +24,8 @@ class ANPRImage: public AnalyseImage  {
 
 
     private:
-        void RefinePotentialPlateBand(ProjectionAnalysis PA);
+        std::vector<ROI> ExtractPotentialPlateRegion(ROI Region);
+        std::vector<ROI> HoughHorizontalBandDetection(ROI InputRegion, float HoughThreshold = 0.5,  int MinimumBandHeight = 10, int PixelChunking = 5);
 
 };
 

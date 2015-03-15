@@ -11,15 +11,33 @@
 
 int main(){
 
+
+
+    ANPRImage **InputImage;
+    InputImage = new ANPRImage *[10]; // Amount of images being worked on
+
+    PlateCandidate **NumberPlate;
+    NumberPlate = new PlateCandidate *[10]; // Amount of images being worked on
+
+
     // Load Image
-    for(int i=1; i < 6; i++){
+    for(int i=1; i < 5; i++){
 
         std::string Location = "00" + std::to_string(i) + ".jpg";
         std::cout << "Processing: " << Location << std::endl;
-        ANPRImage InputImage;
-        InputImage.LoadBitmapImage(Location);
-        InputImage.ProcessGlobalImage(100);
 
+        InputImage[i] = new ANPRImage;
+        InputImage[i]->LoadBitmapImage(Location);
+        InputImage[i]->ProcessGlobalImage(100);
+        delete InputImage[i];
+
+
+/*
+        NumberPlate[i] = new PlateCandidate;
+        NumberPlate[i]->LoadBitmapImage(Location);
+        NumberPlate[i]->AnalysePlate();
+        delete NumberPlate[i];
+*/
     }
 
 

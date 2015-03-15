@@ -9,12 +9,13 @@ BitmapImage::BitmapImage(){
     InitialiseConvolutionMatrix(HorizontalRank,     21, 3, 1,  { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                                                                 0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,
                                                                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  });
-
+    InitialiseConvolutionMatrix(Median,             3, 3, 8,  {1, 1, 1, 1, 0, 1, 1, 1, 1});
 }
 
 BitmapImage::~BitmapImage(){
     //dtor
     //IntegralArray.clear();
+
 }
 
 
@@ -426,53 +427,7 @@ int  BitmapImage::GetGrayscaleMapValue(int x, int y){
     }
 }
 
-std::vector<HoughPoint> BitmapImage::LocateHoughPoints(float Threshold){
 
-    // Initialise persistant variables
-    static std::vector<std::vector<int>> VotingMatrix;
-    static int MaxLineLength;
-    static int MaxVotingCount;
-
-    if(VotingMatrix.size() == 0){
-        CreateGrayscaleMapArray(); // Ensure we have a grayscale image
-        int r = 0;
-
-        // Create voting matrix
-        MaxLineLength = sqrt(Image->h*Image->h + Image->w*Image->w)+5;
-        VotingMatrix.resize( 180  , std::vector<int>( MaxLineLength*2 , 0 ) );
-
-        // Go through image computing angles for each edge
-        for(int y = 0; y < Image->h; y++){
-            for(int x = 0; x < Image->w; x++){
-                if(GetGrayscaleMapValue(x, y) > 250){
-                    for(int t = 0; t < 180; t++){
-                        r = (x*cos(t*0.017432925) + y*sin(t*0.0174532925))+MaxLineLength; // So negative MaxLineLength == VM(t,0)
-                        VotingMatrix[t][r]++; // Add to accumulator
-                        if( VotingMatrix[t][r] > MaxVotingCount ){
-                            MaxVotingCount = VotingMatrix[t][r];
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Apply thresholding, the VotingMatrix was created just now or in the last function call
-    std::vector<HoughPoint> ThresholdPoints;
-    HoughPoint HPoint; // Temp Struct
-    for(int t=0; t < 180; t++){
-        for(int r=0; r < VotingMatrix[t].size(); r++){
-            if((VotingMatrix[t][r] > MaxVotingCount*Threshold)){
-                HPoint.t = t;
-                HPoint.r = r-MaxLineLength; // Allow negative rhos
-                ThresholdPoints.push_back(HPoint);
-            }
-        }
-    }
-
-    // Return vector of Hough Points with applied threshold
-    return ThresholdPoints;
-}
 
 void BitmapImage::CreateIntegralArray(){
     Uint8 R = 0, G = 0, B = 0;

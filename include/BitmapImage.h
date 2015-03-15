@@ -31,6 +31,7 @@ class BitmapImage
         void  ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions);
         ConvolutionMatrix CannyX, CannyY;
         ConvolutionMatrix HorizontalRank;
+        ConvolutionMatrix Median;
 
         /* Line Drawing Functions */
         void DrawLine(int x1, int y1, int x2, int y2, Uint8 R, Uint8 G, Uint8 B);
@@ -48,7 +49,6 @@ class BitmapImage
         /* Image Analysis Functions */
         void CreateGrayscaleMapArray();
         int  GetGrayscaleMapValue(int x, int y);
-        std::vector<HoughPoint> LocateHoughPoints(float Threshold = 0.5);
         void CreateIntegralArray();
         int  GetIntegralValue(int x, int y);
         int  GetIntegralAreaAverage(int x, int y, int Area=12);
