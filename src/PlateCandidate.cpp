@@ -11,7 +11,7 @@ PlateCandidate::~PlateCandidate(){
 void PlateCandidate::AnalysePlate(){
 
     // Lets output to the user using SDL_Surfaces
-    CreateWindowFlags("Plate Candidate Original", Image->w, Image->h, 0);
+    CreateWindowFlags("Plate Candidate NEW LOAD", Image->w, Image->h, 0);
     DisplaySurfaceUntilClose(Image);
     CloseWindow();
 
@@ -19,20 +19,71 @@ void PlateCandidate::AnalysePlate(){
     HistogramEqualisation();
 
 
-    std::vector< ConvolutionMatrix > MyFilters;
-    MyFilters.push_back(Median);
-    ImageConvolutionMatrixTransformation(MyFilters);
-
-    CannyEdgeDetection();
-
     // This threshold might to totalty out, but we can increment 10 times if we don't get a good intensity profile
     // We should be doing adaptive thresholding here!
-   // ImageToBW(40, true);
-   // ImageToAdaptiveMonochrome(15, true);
-   // NormaliseImage();
-   // ImageToAdaptiveMonochrome(15, false);
-   // HistogramEqualisation();
+    ImageToAdaptiveMonochrome(15, true);
 
+
+    // Use Blob Grouping and Connected Component Analysis
+
+    // Lets fix the charactors if they are slightly over-exposed.
+    // We will do this by using a convolution matrix, if the pixel is neighboured by 4? Pixels consider it White
+    std::vector< ConvolutionMatrix > MyFilters;
+    MyFilters.push_back(WhiteFill);
+    ImageConvolutionMatrixTransformation(MyFilters);
+
+    // We need to group objects together in the image
+    // http://en.wikipedia.org/wiki/Connected-component_labeling
+    // Initialise Variables
+    std::vector<int> PixelToLabelMap;
+    PixelToLabelMap.resize(Image->w*Image->h, -1); // Initialise the array to -1
+    DisjointSet MappingSet; // Create new disjoint set structure
+    int PixelValue = 0;
+    int PixelIdent = 0;
+
+    // Update the grayscale map array (which also has out of bounds error handling)
+    CreateGrayscaleMapArray();
+    // For each pixel
+    for(int y = 0; y < Image->h; y++){
+        for(int x = 0; x < Image->w; x++){
+            // Pixel dependant variables
+            PixelValue = GetGrayscaleMapValue(x, y);
+            PixelIdent = (Image->w*y)+x; // Position of pixel in PixelToLabelMap
+
+            // Find Neighbours ( NEIGH THE HOUSE BELLOWED ACROSS THE FIELD)
+            if(GetGrayscaleMapValue((x-1), y) == PixelValue){ // West Check
+                // Assign the label from the pixel we checked
+                 PixelToLabelMap[PixelIdent] = PixelToLabelMap[PixelIdent-1]; // West (To the Left)
+            }
+            if(GetGrayscaleMapValue(x, y-1) == PixelValue && GetGrayscaleMapValue((x-1), y) == PixelValue && PixelToLabelMap[PixelIdent-1] != PixelToLabelMap[PixelIdent-Image->w]){
+                // North & West in same region, should be merged. Assign minimum of the labels and record equivilence
+                int LabelN = PixelToLabelMap[PixelIdent-Image->w];  // North (Directly above current pixel)
+                int LabelW = PixelToLabelMap[PixelIdent-1];         // West
+                int Label  = MappingSet.Union(LabelN, LabelW);      // Merges sets and returns lowest
+                PixelToLabelMap[PixelIdent] = Label;                // Assign new set to PixelToLabel Map
+            }
+            if(GetGrayscaleMapValue((x-1), y) != PixelValue && GetGrayscaleMapValue(x, y-1) == PixelValue){
+                // Assign North label to Pixel
+                PixelToLabelMap[PixelIdent] = PixelToLabelMap[PixelIdent-Image->w]; // North (Directly Above)
+
+            }
+            if(GetGrayscaleMapValue((x-1), y) != PixelValue && GetGrayscaleMapValue(x, y-1) != PixelValue){
+                int Label = MappingSet.MakeSet();       // Create new set - Scope only in this IF statement
+                PixelToLabelMap[PixelIdent] = Label;    // Assign new set to PixelToLabel Map
+            }
+        }
+    }
+
+
+    CreateWindowFlags("Plate Candidate CCA", Image->w, Image->h, 0);
+    DisplaySurfaceUntilClose(Image);
+    CloseWindow();
+
+
+
+
+
+    // Intensity Segmentation
 
     CreateIntensityColumnProfile();
 
@@ -72,7 +123,7 @@ void PlateCandidate::AnalysePlate(){
     Rectangle MyBox;
     MyBox.y = 1;
     MyBox.x = PossibleChars[i].Start-StdDev;
-    MyBox.Width = PossibleChars[i].Length+StdDev*2; // StdDev*2 applies both left and right margins
+    MyBox.Width = PossibleChars[i].Length+(StdDev*2); // StdDev*2 applies both left and right margins
     MyBox.Height = Image->h - 2;
 
     DrawRectangle(MyBox, 0, 0, 255);
@@ -80,7 +131,7 @@ void PlateCandidate::AnalysePlate(){
     }
 
      // Lets output to the user using SDL_Surfaces
-    CreateWindowFlags("Plate Candidate", Image->w, Image->h, 0);
+    CreateWindowFlags("Plate Candidate Intensity", Image->w, Image->h, 0);
     DisplaySurfaceUntilClose(Image);
     CloseWindow();
 

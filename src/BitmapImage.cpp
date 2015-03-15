@@ -9,7 +9,7 @@ BitmapImage::BitmapImage(){
     InitialiseConvolutionMatrix(HorizontalRank,     21, 3, 1,  { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                                                                 0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,
                                                                 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  });
-    InitialiseConvolutionMatrix(Median,             3, 3, 8,  {1, 1, 1, 1, 0, 1, 1, 1, 1});
+    InitialiseConvolutionMatrix(WhiteFill,   3, 3, 4,  {1, 1, 1, 1, 5, 1, 1, 1, 1});
 }
 
 BitmapImage::~BitmapImage(){
@@ -44,11 +44,12 @@ void BitmapImage::LoadBitmapImage(SDL_Surface* InputImage, Rectangle Rect){
             SetRGBValues(Image, x, y, R, G, B);
         }
     }
-    LoadedImage = Image; // Duplicate Loaded Image
+    LoadedImage = SDL_ConvertSurface(Image, Image->format, Image->flags); // Duplicate Loaded Image incase of needed restore
 }
 
 void BitmapImage::RestoreToLoadedImage(){
-    Image = LoadedImage;
+    SDL_FreeSurface(Image); // Remove the image data
+    Image = SDL_ConvertSurface(LoadedImage, LoadedImage->format, LoadedImage->flags); // Load the saved data into Image
 }
 
 

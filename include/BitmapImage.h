@@ -31,7 +31,7 @@ class BitmapImage
         void  ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions);
         ConvolutionMatrix CannyX, CannyY;
         ConvolutionMatrix HorizontalRank;
-        ConvolutionMatrix Median;
+        ConvolutionMatrix WhiteFill;
 
         /* Line Drawing Functions */
         void DrawLine(int x1, int y1, int x2, int y2, Uint8 R, Uint8 G, Uint8 B);
@@ -52,13 +52,13 @@ class BitmapImage
         void CreateIntegralArray();
         int  GetIntegralValue(int x, int y);
         int  GetIntegralAreaAverage(int x, int y, int Area=12);
-
+SDL_Surface* LoadedImage;
 
 
 
     // Don't allow these variables to be accessed by inheritied classes
     private:
-        SDL_Surface* LoadedImage;
+
 
         /* Private Datastores */
         std::vector<int> GrayscaleArray;

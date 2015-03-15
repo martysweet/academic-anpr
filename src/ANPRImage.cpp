@@ -175,9 +175,8 @@ void ANPRImage::RefinePotentialPlateBand(ProjectionAnalysis PA){
         }
 
         // Lets see if this plate candidate is viable
-        RestoreToLoadedImage();
         PlateCandidate Plate;
-        Plate.LoadBitmapImage(Image, PlateRect);
+        Plate.LoadBitmapImage(LoadedImage, PlateRect); // Create plate instance of defined region
         Plate.AnalysePlate();
 
 }
@@ -210,6 +209,24 @@ std::vector<ProjectionAnalysis> ANPRImage::RefineDetectedRegion(ROI & Region, in
     // Now we have an ordered list of vector<ProjectionAnalysis>
     return PeakRegions;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 std::vector<ROI> ANPRImage::ExtractPotentialPlateRegion(ROI Region){
 
