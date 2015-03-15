@@ -80,7 +80,7 @@ void PlateCandidate::AnalysePlate(){
 
     // Merge temporary assignments
     std::set<int> UniqueLabels; // Set used for unique assignment
-    std::map<int,int> BlobPixelCount;
+    std::set< std::pair<int,int> > BlobPixelCount;
     for(int y = 0; y < Image->h; y++){
         for(int x = 0; x < Image->w; x++){
             // Pixel dependant variables
@@ -92,30 +92,31 @@ void PlateCandidate::AnalysePlate(){
             }else{
                 int Label = MappingSet.Find(PixelToLabelMap[PixelIdent]); // Find Parent Set
                 PixelToLabelMap[PixelIdent] = Label;    // Set to parent Set
-                UniqueLabels.insert(Label);             // Add to unique list
-                if(BlobPixelCount.find(Label) == BlobPixelCount.end()){
-                    BlobPixelCount[Label] = 1; // Create the element is needed
-                }else{
-                    BlobPixelCount[Label]++;
-                }
+                std::pair<int,int> Pair;
+                Pair.second = Label; // Unsorted label value
+              //  if(UniqueLabels[])
+                // TODO: Work out best storage method
+
+                UniqueLabels.insert();             // Add to unique list
+
             }
         }
     }
 
 
-
+    // Order by the BlobPixel Occurances
+    std::sort(BlobPixelCount.begin(), BlobPixelCount.end());
 
     // Create a counting matrix for each set
 
-  /*  for(std::set<int>::iterator it=UniqueLabels.begin(); it != UniqueLabels.end(); it++){
+    for(std::set<int>::iterator it=UniqueLabels.begin(); it != UniqueLabels.end(); it++){
 
         // Count the amount of occurances in PixelInLabelMap
-        int OccuranceCount = std::count(PixelToLabelMap.begin(), PixelToLabelMap.end(), *it);
-        if(OccuranceCount > 20){ // Amount of pixels in grouping
-            BlobPixelCount[*it] = OccuranceCount;
+        if(BlobPixelCount[*it] > 30){
+            std::cout << BlobPixelCount[*it] << std::endl;
         }
 
-    }*/
+    }
 
 
 
