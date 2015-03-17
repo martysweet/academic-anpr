@@ -28,9 +28,9 @@ void PlateCandidate::AnalysePlate(){
 
     // Lets fix the charactors if they are slightly over-exposed.
     // We will do this by using a convolution matrix, if the pixel is neighboured by 4? Pixels consider it White
-    std::vector< ConvolutionMatrix > MyFilters;
-    MyFilters.push_back(WhiteFill);
-    ImageConvolutionMatrixTransformation(MyFilters);
+ //   std::vector< ConvolutionMatrix > MyFilters;
+  //  MyFilters.push_back(WhiteFill);
+   // ImageConvolutionMatrixTransformation(MyFilters);
 
     // We need to group objects together in the image
     // http://en.wikipedia.org/wiki/Connected-component_labeling
@@ -80,7 +80,7 @@ void PlateCandidate::AnalysePlate(){
 
     // Merge temporary assignments
     std::set<int> UniqueLabels; // Set used for unique assignment
-    std::set< std::pair<int,int> > BlobPixelCount;
+    std::map<int,int> BlobPixelCount;
     for(int y = 0; y < Image->h; y++){
         for(int x = 0; x < Image->w; x++){
             // Pixel dependant variables
@@ -92,33 +92,243 @@ void PlateCandidate::AnalysePlate(){
             }else{
                 int Label = MappingSet.Find(PixelToLabelMap[PixelIdent]); // Find Parent Set
                 PixelToLabelMap[PixelIdent] = Label;    // Set to parent Set
-                std::pair<int,int> Pair;
-                Pair.second = Label; // Unsorted label value
-              //  if(UniqueLabels[])
-                // TODO: Work out best storage method
+                UniqueLabels.insert(Label);             // Add to unique list
 
-                UniqueLabels.insert();             // Add to unique list
+                // Create or increment the Label Count
+                if(BlobPixelCount.find(Label) == BlobPixelCount.end()){
+                    BlobPixelCount[Label] = 1;
+                }else{
+                    BlobPixelCount[Label]++;
+                }
+
 
             }
         }
     }
 
+    std::vector<std::pair<int,int>> LabelCount(BlobPixelCount.begin(), BlobPixelCount.end());
 
     // Order by the BlobPixel Occurances
-    std::sort(BlobPixelCount.begin(), BlobPixelCount.end());
+    std::sort(LabelCount.begin(), LabelCount.end(), [](const std::pair<int,int> &element1, const std::pair<int,int> &element2) {
+                                                        return element1.second > element2.second;
+                                                    });
 
-    // Create a counting matrix for each set
+    // Limit this to the top 15 labels
+    LabelCount.erase(LabelCount.begin() + 15, LabelCount.end());
 
-    for(std::set<int>::iterator it=UniqueLabels.begin(); it != UniqueLabels.end(); it++){
+    std::vector<ROI> BlobRegions;
+    for(int i=0; i < LabelCount.size(); i++){
 
-        // Count the amount of occurances in PixelInLabelMap
-        if(BlobPixelCount[*it] > 30){
-            std::cout << BlobPixelCount[*it] << std::endl;
+        if(LabelCount[i].second > 30){
+         std::cout << "Found: Label " << LabelCount[i].first << " " << LabelCount[i].second << std::endl;
+        }
+        // Set variables for this region
+        int xMax = 0;
+        int xMin = Image->w;
+        int yMax = 0;
+        int yMin = Image->h;
+        int PixelCount = 0;
+
+        // Find pixels with this label in PixelToLabelMap and set them to green
+        for(int j=0; j < PixelToLabelMap.size(); j++){
+
+
+
+            if(PixelToLabelMap[j] == LabelCount[i].first){
+                // Pixel is part of this label
+                PixelCount++;
+                int y = j/(Image->w);
+                int x = j-(y*Image->w);
+                // We can compute the region by magic
+                if(x < xMin){
+                    xMin = x;
+                }
+                if(x > xMax){
+                    xMax = x;
+                }
+                if(y < yMin){
+                    yMin = y;
+                }
+                if(y > yMax){
+                    yMax = y;
+                }
+                SetRGBValues(Image, x, y, 255, 0, 0);
+            }
+
+        }
+
+        // Now we have boundaries
+        //   xmin   xmax
+        //   ymin   ymax
+        ROI BlobRegion;
+        BlobRegion.Rect.x = xMin;
+        BlobRegion.Rect.y = yMin;
+        BlobRegion.Rect.Height = yMax-yMin; // Height
+        BlobRegion.Rect.Width = xMax-xMin; // Width
+        BlobRegion.Pixels = PixelCount;
+
+        BlobRegions.push_back(BlobRegion);
+
+        // Plot the region as a rect
+        DrawRectangle(BlobRegion.Rect, 0, 255, 0);
+    }
+
+
+
+    // Do analysis on all found BlobRegions
+    std::vector<ROI> CharacterCandidate;
+    for(int i=0; i < BlobRegions.size(); i++){
+        int h = BlobRegions[i].Rect.Height;
+        int w = BlobRegions[i].Rect.Width;
+        float d = (float)h/(float)w; // Ratio
+
+        // Ensure height is bigger than width
+        if(h < w){
+            continue;
+        }
+
+        // 2001 Reg | Normal Char | 1 or L
+        if( ((1.3 <= d) && (d <= 1.7)) || ((5.2 <= d) && (d <= 5.8)) ){
+            // Good candidate
+            BlobRegions[i].Score = 1001;
+            DrawRectangle(BlobRegions[i].Rect, 255, 255, 0);
+            CharacterCandidate.push_back(BlobRegions[i]);
+            std::cout << "2001+" << std::endl;
+        }
+
+
+        // Pre 2001
+        else if( ((1.5 <= d) && (d <= 1.9)) || ((4.7 <= d) && (d <= 5.1)) ){
+            // Good candidate
+            BlobRegions[i].Score = 1000;
+            DrawRectangle(BlobRegions[i].Rect, 0, 255, 255);
+            CharacterCandidate.push_back(BlobRegions[i]);
+            std::cout << "Before 2001" << std::endl;
+        }
+
+    }
+    // Clean up all CCA varables here
+    BlobRegions.clear();
+    PixelToLabelMap.clear();
+
+
+
+    // Lets find a grouping of CharacterCandidates
+    // Order the candidates by their x-axis coordinate
+    std::sort( CharacterCandidate.begin( ), CharacterCandidate.end( ), [ ]( const ROI& Left, const ROI& Right ){
+                                                                                return Left.Rect.x < Right.Rect.x;
+                                                                         });
+
+    // Create a set representation for each Charactor Candidate
+    DisjointSet CharGroup;
+    // More sets than I do in the gym
+    // Create the needed number of sets
+    for(int i = 0; i < CharacterCandidate.size(); i++){
+        CharGroup.MakeSet();
+    }
+
+    // For each box, starting with smallest x
+    for(int i = 0; i < CharacterCandidate.size(); i++){
+
+        std::cout << CharacterCandidate[i].Rect.x << std::endl;
+        // Compute search region
+        Point Point1;
+        Point Point2;
+        Point Point3;
+        Point1.x = CharacterCandidate[i].Rect.x + CharacterCandidate[i].Rect.Width + (CharacterCandidate[i].Rect.Height/2); // This gives roughly 20mm right when Height ~80
+        Point1.y = CharacterCandidate[i].Rect.y;
+        Point2.x = Point1.x;
+        Point2.y = CharacterCandidate[i].Rect.y + (CharacterCandidate[i].Rect.Height/2); // Half way
+        Point3.x = Point1.x;
+        Point3.y = CharacterCandidate[i].Rect.y + CharacterCandidate[i].Rect.Height;
+        DrawLine(Point1, Point3, 255, 153, 0);
+
+        // Lets look through all boxes to the right of this one?
+            for(int j=i; j < CharacterCandidate.size(); j++){
+                Rectangle R = CharacterCandidate[j].Rect;
+                // Do any coordiates of this box, fit in the region above? TODO: I want this to work
+                if( (Point1.x >= R.x) && (Point1.x <= R.x + R.Width) && (Point1.y >= R.y) && (Point1.y <= R.y + R.Height)
+                 || (Point2.x >= R.x) && (Point2.x <= R.x + R.Width) && (Point2.y >= R.y) && (Point2.y <= R.y + R.Height)
+                 || (Point3.x >= R.x) && (Point3.x <= R.x + R.Width) && (Point3.y >= R.y) && (Point3.y <= R.y + R.Height) ){
+                    // We have a match!
+                    CharGroup.Union(i,j);
+                    std::cout << "Match" << i << " " << j << std::endl;
+                }
+            }
+    }
+
+    // Now we should have sets of unions whose boxes are close to eachother
+    // Find highest occurance of a set
+    std::map<int,int> SetVoteCount;
+
+
+    for(int i = 0; i < CharacterCandidate.size(); i++){
+        std::cout << CharGroup.Find(i) << std::endl;
+
+        if(SetVoteCount.find(CharGroup.Find(i)) == SetVoteCount.end()){
+            SetVoteCount[CharGroup.Find(i)] = 1;
+        }else{
+            SetVoteCount[CharGroup.Find(i)]++;
         }
 
     }
 
 
+    // Order SetVote keeping the key map
+    std::vector<std::pair<int,int>> SetVote(SetVoteCount.begin(), SetVoteCount.end());
+    std::sort(SetVote.begin(), SetVote.end(), [](const std::pair<int,int> &element1, const std::pair<int,int> &element2) {
+                                                        return element1.second > element2.second;
+                                                    });
+
+
+
+
+    // Take the first SetVote Item as the best group
+    int BestGroup = 0; // If this isn't set using the if statement, it won't matter anyway
+    if(SetVote.size() > 0){
+        BestGroup = SetVote[0].first;
+        std::cout << "Best:" << BestGroup << std::endl;
+    }
+
+    // If the candidate == BestGroup, lets make it a new colour
+    ROI FinalCandidates;
+    for(int i = 0; i < CharacterCandidate.size(); i++){
+        if(CharGroup.Find(i) == BestGroup){
+            DrawRectangle(CharacterCandidate[i].Rect, 255, 0, 102);
+            FinalCandidates.push_back(CharacterCandidate[i]);
+        }
+    }
+
+
+/*
+    // Create average of pixels in the CharacterCandidates - CharacterCandidate[i].Pixels
+    float AverageYValue = accumulate(CharacterCandidate.begin(), CharacterCandidate.end(), 0.0,
+                                        [](int Sum, const ROI& Element) { return Sum + Element.Rect.y; }) / CharacterCandidate.size();
+
+
+    // Calculate the STD DEV
+    float AvgDiff = 0.0; // SUM:(Wi - Wavg)^2
+    for(int i = 0; i < CharacterCandidate.size(); i++){
+        AvgDiff += (CharacterCandidate[i].Rect.y - AverageYValue)*(CharacterCandidate[i].Rect.y - AverageYValue); // (Wi - Wavg)^2
+    }
+
+    float StdDev = ceil(sqrt(AvgDiff/CharacterCandidate.size()));
+
+    std::cout << "STDev: " << StdDev << std::endl;
+
+    // Lets go through the candidate region for further analysis
+    for(int i=0; i < CharacterCandidate.size(); i++){
+        int h = CharacterCandidate[i].Rect.Height;
+        int w = CharacterCandidate[i].Rect.Width;
+
+        // Discard if this Candidate is has less pixels than the average
+        if((CharacterCandidate[i].Rect.y <= AverageYValue+StdDev) && (AverageYValue-StdDev <= CharacterCandidate[i].Rect.y)){
+              DrawRectangle(CharacterCandidate[i].Rect, 255, 255, 0);
+          //  CharacterCandidate.erase(CharacterCandidate.begin()+i);
+          //  i--;
+        }
+
+    }*/
 
 
 
@@ -129,7 +339,7 @@ void PlateCandidate::AnalysePlate(){
 
 
 
-
+/*
     // Intensity Segmentation
 
     CreateIntensityColumnProfile();
@@ -184,7 +394,7 @@ void PlateCandidate::AnalysePlate(){
 
    // ImageToAdaptiveMonochrome();
     SaveImageToFile("platecand.bmp");
-
+*/
 }
 
 

@@ -80,7 +80,7 @@ std::vector<ROI> ANPRImage::HoughHorizontalBandDetection(ROI InputRegion, float 
 
     // Horizontal Banding
     std::vector<int> HorizontalBandVoting;
-    HorizontalBandVoting.resize((int)ceil(Image->h/PixelChunking), 0); // Devide whole image into chunks of PixelChunking pixels for voting, regardless of ROI
+    HorizontalBandVoting.resize((int)ceil(Image->h/PixelChunking)+1, 0); // Devide whole image into chunks of PixelChunking pixels for voting, regardless of ROI
 
     // Merge all similar lines (within PixelChunking y pixels) into Horizontal Bands in HorizontalBandVoting
     float yAverage;

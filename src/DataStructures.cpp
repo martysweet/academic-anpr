@@ -29,6 +29,7 @@ struct Rectangle {
 struct ROI {
     Rectangle Rect;
     int Score = 0;
+    int Pixels = 0;
 };
 
 struct HoughPoint {

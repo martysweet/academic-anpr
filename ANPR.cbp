@@ -42,12 +42,14 @@
 		<Unit filename="include/ANPRImage.h" />
 		<Unit filename="include/AnalyseImage.h" />
 		<Unit filename="include/BitmapImage.h" />
+		<Unit filename="include/DisjointSet.h" />
 		<Unit filename="include/PlateCandidate.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/ANPRImage.cpp" />
 		<Unit filename="src/AnalyseImage.cpp" />
 		<Unit filename="src/BitmapImage.cpp" />
 		<Unit filename="src/DataStructures.cpp" />
+		<Unit filename="src/DisjointSet.cpp" />
 		<Unit filename="src/PlateCandidate.cpp" />
 		<Extensions>
 			<code_completion />

@@ -15,7 +15,7 @@ class DisjointSet
     protected:
     private:
         std::map<int,int> Graph;
-        int NextSet = 0; // Value is incremented before every use
+        int NextSet = -1; // Value is incremented before every use
 
 };
 

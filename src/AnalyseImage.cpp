@@ -284,7 +284,7 @@ std::vector<HoughPoint> AnalyseImage::LocateHoughPoints(float Threshold){
             for(int x = 0; x < Image->w; x++){
                 if(GetGrayscaleMapValue(x, y) > 250){
                     for(int t = 0; t < 180; t++){
-                        r = (x*cos(t*0.017432925) + y*sin(t*0.0174532925))+HoughMaxLineLength; // So negative HoughMaxLineLength == VM(t,0)
+                        r = (x*cos(t * DEGTORADIAN) + y*sin(t * DEGTORADIAN))+HoughMaxLineLength; // So negative HoughMaxLineLength == VM(t,0)
                         HoughVotingMatrix[t][r]++; // Add to accumulator
                         if( HoughVotingMatrix[t][r] > HoughMaxVotingCount ){
                             HoughMaxVotingCount = HoughVotingMatrix[t][r];

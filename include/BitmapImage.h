@@ -35,6 +35,7 @@ class BitmapImage
 
         /* Line Drawing Functions */
         void DrawLine(int x1, int y1, int x2, int y2, Uint8 R, Uint8 G, Uint8 B);
+        void DrawLine(Point Point1, Point Point2, Uint8 R, Uint8 G, Uint8 B);
         void DrawRectangle(int x, int y, int w, int h,  Uint8 R, Uint8 G, Uint8 B);
         void DrawRectangle(Rectangle Rect, Uint8 R, Uint8 G, Uint8 B);
 

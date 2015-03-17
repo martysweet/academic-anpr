@@ -131,6 +131,10 @@ void BitmapImage::OrderCoordinates(int &x1, int &y1, int &x2, int &y2){
     }
 }
 
+void BitmapImage::DrawLine(Point Point1, Point Point2, Uint8 R, Uint8 G, Uint8 B){
+    DrawLine(Point1.x, Point1.y, Point2.x, Point2.y, R, G, B);
+}
+
 void BitmapImage::DrawLine(int x1, int y1, int x2, int y2, Uint8 R, Uint8 G, Uint8 B){
     OrderCoordinates(x1, y1, x2, y2); // Make sure the largest is (x2,y2)
     int dx = x2-x1;
