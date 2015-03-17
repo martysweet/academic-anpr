@@ -7,6 +7,7 @@
 #include "include/BitmapImage.h"
 #include "include/ANPRImage.h"
 #include "include/PlateCandidate.h"
+#include "include/OCRAnalysis.h"
 
 
 int main(){
@@ -21,14 +22,14 @@ int main(){
 
 
     // Load Image
-    for(int i=1; i < 5; i++){
+    for(int i=1; i <= 5; i++){
 
         std::string Location = "00" + std::to_string(i) + ".jpg";
         std::cout << "Processing: " << Location << std::endl;
 
         InputImage[i] = new ANPRImage;
         InputImage[i]->LoadBitmapImage(Location);
-        InputImage[i]->ProcessGlobalImage(100);
+        InputImage[i]->ProcessGlobalImage(50);
         delete InputImage[i];
 
 

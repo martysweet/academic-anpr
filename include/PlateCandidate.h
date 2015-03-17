@@ -3,11 +3,12 @@
 
 #include <vector>
 #include <cmath>
-#include "../src/DataStructures.cpp"
-#include <DisjointSet.h>
+#include "DataStructures.h"
+#include "DisjointSet.h"
 #include <set>
 
-#include <AnalyseImage.h>
+#include "AnalyseImage.h"
+#include "OCRAnalysis.h"
 class PlateCandidate :  public AnalyseImage {
     public:
         PlateCandidate();

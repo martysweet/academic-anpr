@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <vector>
-#include <BitmapImage.h>
+#include "BitmapImage.h"
 class AnalyseImage : public BitmapImage
 {
     public:

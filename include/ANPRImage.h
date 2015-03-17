@@ -5,7 +5,7 @@
 #include <sstream>
 #include <algorithm>
 
-#include "../src/DataStructures.cpp"
+#include "DataStructures.h"
 
 #include "AnalyseImage.h"
 #include "PlateCandidate.h"

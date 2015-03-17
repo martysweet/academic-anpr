@@ -28,6 +28,11 @@ void ANPRImage::ProcessGlobalImage(int MinimumBandHeight){
     StartingRegion.Rect.Width  = Image->w;
     std::vector<ROI> Regions = HoughHorizontalBandDetection(StartingRegion, 0.5, MinimumBandHeight, 20);  // Find good horizontal band candidates
 
+  // std::vector<ROI> Regions;
+   // Regions.push_back(StartingRegion);
+
+
+
     // Debug message
    //   DrawRectangle(Regions[0].Rect, 255,0,0);
     std::cout << " >> Global Image Banding: Found " << Regions.size() << " regions for analysis" << std::endl;
@@ -86,7 +91,7 @@ std::vector<ROI> ANPRImage::HoughHorizontalBandDetection(ROI InputRegion, float 
     float yAverage;
     bool HorizontalBandPresent = false;
     for(int i = 0; i < HoughPoints.size(); i++){
-        if((HoughPoints[i].t > 88) && (HoughPoints[i].t < 92)){         // Consider line to be horizontal
+        if((HoughPoints[i].t > 86) && (HoughPoints[i].t < 95)){         // Consider line to be horizontal
 
             // Calculate line equations as required
             Point Point1, Point2;

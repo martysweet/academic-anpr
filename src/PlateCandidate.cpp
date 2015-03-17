@@ -18,20 +18,11 @@ void PlateCandidate::AnalysePlate(){
     NormaliseImage();
     HistogramEqualisation();
 
-
     // This threshold might to totalty out, but we can increment 10 times if we don't get a good intensity profile
     // We should be doing adaptive thresholding here!
     ImageToAdaptiveMonochrome(15, true);
 
-
     // Use Blob Grouping and Connected Component Analysis
-
-    // Lets fix the charactors if they are slightly over-exposed.
-    // We will do this by using a convolution matrix, if the pixel is neighboured by 4? Pixels consider it White
- //   std::vector< ConvolutionMatrix > MyFilters;
-  //  MyFilters.push_back(WhiteFill);
-   // ImageConvolutionMatrixTransformation(MyFilters);
-
     // We need to group objects together in the image
     // http://en.wikipedia.org/wiki/Connected-component_labeling
     // Initialise Variables
@@ -106,22 +97,20 @@ void PlateCandidate::AnalysePlate(){
         }
     }
 
+    // Order by the BlobPixel Occurances - TODO: Can we just read in the map here? Hmmmm
     std::vector<std::pair<int,int>> LabelCount(BlobPixelCount.begin(), BlobPixelCount.end());
-
-    // Order by the BlobPixel Occurances
     std::sort(LabelCount.begin(), LabelCount.end(), [](const std::pair<int,int> &element1, const std::pair<int,int> &element2) {
                                                         return element1.second > element2.second;
                                                     });
 
-    // Limit this to the top 15 labels
+    // Limit this to the top 15 labels/regions
     LabelCount.erase(LabelCount.begin() + 15, LabelCount.end());
 
     std::vector<ROI> BlobRegions;
     for(int i=0; i < LabelCount.size(); i++){
 
-        if(LabelCount[i].second > 30){
-         std::cout << "Found: Label " << LabelCount[i].first << " " << LabelCount[i].second << std::endl;
-        }
+        std::cout << "Processing Label: " << LabelCount[i].first << " Value: " << LabelCount[i].second << std::endl;
+
         // Set variables for this region
         int xMax = 0;
         int xMin = Image->w;
@@ -129,10 +118,8 @@ void PlateCandidate::AnalysePlate(){
         int yMin = Image->h;
         int PixelCount = 0;
 
-        // Find pixels with this label in PixelToLabelMap and set them to green
+        // Find pixels with this label in PixelToLabelMap and set them to green (GENERAL REGION MATCH)
         for(int j=0; j < PixelToLabelMap.size(); j++){
-
-
 
             if(PixelToLabelMap[j] == LabelCount[i].first){
                 // Pixel is part of this label
@@ -187,8 +174,9 @@ void PlateCandidate::AnalysePlate(){
             continue;
         }
 
-        // 2001 Reg | Normal Char | 1 or L
-        if( ((1.3 <= d) && (d <= 1.7)) || ((5.2 <= d) && (d <= 5.8)) ){
+        // Normal Char | 1 or L
+        if( ((1.3 <= d) && (d <= 1.7)) || ((5.2 <= d) && (d <= 5.8))        // 2001
+            || ((1.5 <= d) && (d <= 1.9)) || ((4.7 <= d) && (d <= 5.2)) ){  // Pre-2001
             // Good candidate
             BlobRegions[i].Score = 1001;
             DrawRectangle(BlobRegions[i].Rect, 255, 255, 0);
@@ -197,14 +185,7 @@ void PlateCandidate::AnalysePlate(){
         }
 
 
-        // Pre 2001
-        else if( ((1.5 <= d) && (d <= 1.9)) || ((4.7 <= d) && (d <= 5.1)) ){
-            // Good candidate
-            BlobRegions[i].Score = 1000;
-            DrawRectangle(BlobRegions[i].Rect, 0, 255, 255);
-            CharacterCandidate.push_back(BlobRegions[i]);
-            std::cout << "Before 2001" << std::endl;
-        }
+
 
     }
     // Clean up all CCA varables here
@@ -291,7 +272,7 @@ void PlateCandidate::AnalysePlate(){
     }
 
     // If the candidate == BestGroup, lets make it a new colour
-    ROI FinalCandidates;
+    std::vector<ROI> FinalCandidates;
     for(int i = 0; i < CharacterCandidate.size(); i++){
         if(CharGroup.Find(i) == BestGroup){
             DrawRectangle(CharacterCandidate[i].Rect, 255, 0, 102);
@@ -299,102 +280,31 @@ void PlateCandidate::AnalysePlate(){
         }
     }
 
-
-/*
-    // Create average of pixels in the CharacterCandidates - CharacterCandidate[i].Pixels
-    float AverageYValue = accumulate(CharacterCandidate.begin(), CharacterCandidate.end(), 0.0,
-                                        [](int Sum, const ROI& Element) { return Sum + Element.Rect.y; }) / CharacterCandidate.size();
-
-
-    // Calculate the STD DEV
-    float AvgDiff = 0.0; // SUM:(Wi - Wavg)^2
-    for(int i = 0; i < CharacterCandidate.size(); i++){
-        AvgDiff += (CharacterCandidate[i].Rect.y - AverageYValue)*(CharacterCandidate[i].Rect.y - AverageYValue); // (Wi - Wavg)^2
-    }
-
-    float StdDev = ceil(sqrt(AvgDiff/CharacterCandidate.size()));
-
-    std::cout << "STDev: " << StdDev << std::endl;
-
-    // Lets go through the candidate region for further analysis
-    for(int i=0; i < CharacterCandidate.size(); i++){
-        int h = CharacterCandidate[i].Rect.Height;
-        int w = CharacterCandidate[i].Rect.Width;
-
-        // Discard if this Candidate is has less pixels than the average
-        if((CharacterCandidate[i].Rect.y <= AverageYValue+StdDev) && (AverageYValue-StdDev <= CharacterCandidate[i].Rect.y)){
-              DrawRectangle(CharacterCandidate[i].Rect, 255, 255, 0);
-          //  CharacterCandidate.erase(CharacterCandidate.begin()+i);
-          //  i--;
-        }
-
-    }*/
-
-
-
     CreateWindowFlags("Plate Candidate CCA", Image->w, Image->h, 0);
     DisplaySurfaceUntilClose(Image);
     CloseWindow();
 
 
-
-
-/*
-    // Intensity Segmentation
-
-    CreateIntensityColumnProfile();
-
-    ROI WholeImage;
-    WholeImage.Rect.x = 0;
-    WholeImage.Rect.y = 0;
-    WholeImage.Rect.Height = Image->h;
-    WholeImage.Rect.Width  = Image->w;
-    std::vector<AverageGrouping> PossibleChars = AnalyseAxisAverageProfile(ColumnIntensityProfile, WholeImage, 'X', 9, 0.15);
-
-    // Now we should have a list of possible chars (less than 9)
-    // Lets calculate the average of these
-    float AverageCharWidth = accumulate(PossibleChars.begin(), PossibleChars.end(), 0.0,
-                                        [](int sum, const AverageGrouping& element) { return sum + element.Length; }) / PossibleChars.size();
-    AverageCharWidth = ceil(AverageCharWidth); // Round up
-
-    std::cout << "Average Width after limiting: " << AverageCharWidth << std::endl;
-
-    // Calculate the STD DEV
-    float AvgDiff = 0.0; // SUM:(Wi - Wavg)^2
-    for(int i = 0; i < PossibleChars.size(); i++){
-        AvgDiff += (PossibleChars[i].Length - AverageCharWidth)*(PossibleChars[i].Length - AverageCharWidth); // (Wi - Wavg)^2
-    }
-
-    float StdDev = ceil(sqrt(AvgDiff/PossibleChars.size()));
-
-    std::cout << "Average STDDEV: " << StdDev << std::endl;
-    if(StdDev > 10 || PossibleChars.size() < 4){
-        std::cout << "!!! PLATE PROBABLY INVALID !!!" << std::endl;
+    // See how many FinalCandidates we have
+    if(FinalCandidates.size() >= 4){
+        // Okay match, lets OCR
+        std::cout << " >>>>> We have " << FinalCandidates.size() << " characters" << std::endl;
+        for(int i=0; i < FinalCandidates.size(); i++){
+            // Create new OCR instance
+            OCRAnalysis OCR;
+            OCR.LoadBitmapImage(LoadedImage, FinalCandidates[i].Rect); // Create plate instance of defined region
+            OCR.Process(i);
+        }
     }else{
-        std::cout << "*** PLATE LOOKS PROMISING ***" << std::endl;
+        std::cout << " >>>>> Ignoring plate" << std::endl;
     }
 
-    // Draw a box
-    for(int i = 0; i < PossibleChars.size(); i++){
 
-    Rectangle MyBox;
-    MyBox.y = 1;
-    MyBox.x = PossibleChars[i].Start-StdDev;
-    MyBox.Width = PossibleChars[i].Length+(StdDev*2); // StdDev*2 applies both left and right margins
-    MyBox.Height = Image->h - 2;
 
-    DrawRectangle(MyBox, 0, 0, 255);
 
-    }
 
-     // Lets output to the user using SDL_Surfaces
-    CreateWindowFlags("Plate Candidate Intensity", Image->w, Image->h, 0);
-    DisplaySurfaceUntilClose(Image);
-    CloseWindow();
 
-   // ImageToAdaptiveMonochrome();
-    SaveImageToFile("platecand.bmp");
-*/
+
 }
 
 

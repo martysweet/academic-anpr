@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <cmath>
 #include "../SDL_Wrapper.h"
-#include "../src/DataStructures.cpp"
+#include "DataStructures.h"
 
 
 
@@ -26,6 +26,7 @@ class BitmapImage
     // Allow these variables to be accessed by inheritied classes
     protected:
         SDL_Surface* Image;
+        SDL_Surface* LoadedImage;
 
         /* Matrix Manipulation Functions */
         void  ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions);
@@ -53,8 +54,6 @@ class BitmapImage
         void CreateIntegralArray();
         int  GetIntegralValue(int x, int y);
         int  GetIntegralAreaAverage(int x, int y, int Area=12);
-SDL_Surface* LoadedImage;
-
 
 
     // Don't allow these variables to be accessed by inheritied classes
