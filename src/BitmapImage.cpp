@@ -52,6 +52,11 @@ void BitmapImage::RestoreToLoadedImage(){
     Image = SDL_ConvertSurface(LoadedImage, LoadedImage->format, LoadedImage->flags); // Load the saved data into Image
 }
 
+void BitmapImage::DebugDisplayImageToWindow(std::string Title){
+    CreateWindowFlags(Title.c_str(), Image->w, Image->h, 0);
+    DisplaySurfaceUntilClose(Image);
+    CloseWindow();
+}
 
 /* Matrix Manipulation Functions */
 void  BitmapImage::InitialiseConvolutionMatrix(ConvolutionMatrix &Struct, int Columns, int Rows, float Weight, std::initializer_list<float> List){

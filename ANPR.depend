@@ -24,7 +24,7 @@
 	"SDL/SDL.h"
 	"SDL/SDL_image.h"
 
-1426602153 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/main.cpp
+1426674603 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/main.cpp
 	<iostream>
 	<string>
 	<vector>
@@ -35,7 +35,7 @@
 	"include/PlateCandidate.h"
 	"include/OCRAnalysis.h"
 
-1426605392 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/BitmapImage.h
+1426675169 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/BitmapImage.h
 	<vector>
 	<string>
 	<iostream>
@@ -43,8 +43,9 @@
 	<cmath>
 	"../SDL_Wrapper.h"
 	"DataStructures.h"
+	<string>
 
-1426540571 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/BitmapImage.cpp
+1426675283 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/BitmapImage.cpp
 	"BitmapImage.h"
 
 1425673502 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/NumberPlate.cpp
@@ -62,7 +63,7 @@
 	"AnalyseImage.h"
 	"PlateCandidate.h"
 
-1426602147 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/ANPRImage.cpp
+1426675160 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/ANPRImage.cpp
 	"ANPRImage.h"
 
 1426529678 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/DataStructures.cpp
@@ -97,7 +98,7 @@
 1426533476 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/DisjointSet.cpp
 	"DisjointSet.h"
 
-1426602990 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/OCRAnalysis.cpp
+1426606389 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/OCRAnalysis.cpp
 	"OCRAnalysis.h"
 
 1426606137 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/OCRAnalysis.h

@@ -53,7 +53,8 @@ void ANPRImage::ProcessGlobalImage(int MinimumBandHeight){
         // For each large region, split into vertical projection snapshot regions
         for(int i = 0; i < Regions.size(); i++){
             RestoreToLoadedImage();
-
+            DrawRectangle(Regions[i].Rect, 255, 255, 255);
+            DebugDisplayImageToWindow("Horizontal Banded Region");
 
             std::cout << "  >> Detecting plates within:  y0: " << Regions[i].Rect.y << " -> " << Regions[i].Rect.y+Regions[i].Rect.Height << std::endl;
             // Get list of Peaks from row profile analysis
@@ -193,6 +194,7 @@ std::vector<ProjectionAnalysis> ANPRImage::RefineDetectedRegion(ROI & Region, in
     // Drop regions below HeightThreshold
     for(int i = 0; i < PeakRegions.size(); i++){
         if(PeakRegions[i].Height() < HeightThreshold){
+            std::cout << "    >> Droping refined region with height of :" << PeakRegions[i].Height() << std::endl;
             PeakRegions.erase(PeakRegions.begin()+i);
             i--;
         }

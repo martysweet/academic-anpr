@@ -8,7 +8,7 @@
 #include <cmath>
 #include "../SDL_Wrapper.h"
 #include "DataStructures.h"
-
+#include <string>
 
 
 class BitmapImage
@@ -22,6 +22,9 @@ class BitmapImage
         void LoadBitmapImage(SDL_Surface* InputImage, Rectangle Rect);
         void SaveImageToFile(std::string Filename);
         void RestoreToLoadedImage();
+
+        /* Debug Display */
+        void DebugDisplayImageToWindow(std::string Title);
 
     // Allow these variables to be accessed by inheritied classes
     protected:
