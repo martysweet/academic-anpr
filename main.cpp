@@ -22,23 +22,23 @@ int main(){
 
 
     // Load Image
-    for(int i=1; i <= 5; i++){
+    for(int i=7; i <= 9; i++){
 
         std::string Location = "00" + std::to_string(i) + ".jpg";
         std::cout << "Processing: " << Location << std::endl;
-
+/*
         InputImage[i] = new ANPRImage;
         InputImage[i]->LoadBitmapImage(Location);
         InputImage[i]->ProcessGlobalImage(50);
         delete InputImage[i];
+*/
 
 
-/*
         NumberPlate[i] = new PlateCandidate;
         NumberPlate[i]->LoadBitmapImage(Location);
         NumberPlate[i]->AnalysePlate();
         delete NumberPlate[i];
-*/
+
     }
 
 

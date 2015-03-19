@@ -22,6 +22,8 @@ void PlateCandidate::AnalysePlate(){
     // We should be doing adaptive thresholding here!
     ImageToAdaptiveMonochrome(15, true);
 
+    DebugDisplayImageToWindow("Plate after preprocessing");
+
     // Use Blob Grouping and Connected Component Analysis
     // We need to group objects together in the image
     // http://en.wikipedia.org/wiki/Connected-component_labeling
@@ -104,7 +106,7 @@ void PlateCandidate::AnalysePlate(){
                                                     });
 
     // Limit this to the top 15 labels/regions
-    LabelCount.erase(LabelCount.begin() + 15, LabelCount.end());
+    LabelCount.erase(LabelCount.begin() + 60, LabelCount.end());
 
     std::vector<ROI> BlobRegions;
     for(int i=0; i < LabelCount.size(); i++){
