@@ -14,7 +14,7 @@ class ANPRImage: public AnalyseImage  {
     public:
         ANPRImage();
         /* Callable Functions */
-        void ProcessGlobalImage(int MinimumBandHeight);
+        bool ProcessGlobalImage(int MinimumBandHeight);
 
 
     protected:

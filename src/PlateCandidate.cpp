@@ -8,22 +8,48 @@ PlateCandidate::~PlateCandidate(){
     //dtor
 }
 
-void PlateCandidate::AnalysePlate(){
+ROI PlateCandidate::GetPlateRegion(){
 
-    // Lets output to the user using SDL_Surfaces
-    CreateWindowFlags("Plate Candidate NEW LOAD", Image->w, Image->h, 0);
-    DisplaySurfaceUntilClose(Image);
-    CloseWindow();
-
-    NormaliseImage();
+    // Preprocess the plate
     HistogramEqualisation();
-
-    // This threshold might to totalty out, but we can increment 10 times if we don't get a good intensity profile
-    // We should be doing adaptive thresholding here!
+    NormaliseImage();
     ImageToAdaptiveMonochrome(15, true);
 
-    DebugDisplayImageToWindow("Plate after preprocessing");
+    // Variables
+    ROI Region;
 
+    // Get possible charactor regions, ordered by x
+    std::vector<ROI> PlateCandidates = CCA();
+
+    // Get a rough region to work with
+    if(PlateCandidates.size() > 0){
+        Region.Rect.x      = PlateCandidates[0].Rect.x - Image->w*0.2;      // First char x + 0.3ImageW
+        Region.Rect.y      = PlateCandidates[0].Rect.y - Image->h*0.1;      // First char y + 0.3ImageH
+        Region.Rect.Height = PlateCandidates[0].Rect.Height + Image->h*0.2; // First char Height + 0.3ImageH
+            // Distance between the first char and last char + width of the last char + 0.3ImageW
+        Region.Rect.Width  = PlateCandidates[PlateCandidates.size()-1].Rect.x - PlateCandidates[0].Rect.x
+                            + PlateCandidates[PlateCandidates.size()-1].Rect.Width + Image->w*0.6;
+
+        // Verify and adjust so the region is within the bounds of the image
+        ROIFix( Region ); // Passed via reference
+    }
+
+    // Return the ROI
+    return Region;
+}
+
+std::vector<ROI> PlateCandidate::GetPlateCharacters(){
+
+    // Preprocess the plate
+    HistogramEqualisation();
+    NormaliseImage();
+    ImageToAdaptiveMonochrome(15, true);
+
+    // Get the characters from the region defined
+    return CCA();
+}
+
+std::vector<ROI> PlateCandidate::CCA(){
     // Use Blob Grouping and Connected Component Analysis
     // We need to group objects together in the image
     // http://en.wikipedia.org/wiki/Connected-component_labeling
@@ -33,7 +59,6 @@ void PlateCandidate::AnalysePlate(){
     DisjointSet MappingSet; // Create new disjoint set structure
     int PixelValue = 0;
     int PixelIdent = 0;
-
     // Update the grayscale map array (which also has out of bounds error handling)
     CreateGrayscaleMapArray();
     // For each pixel
@@ -43,11 +68,12 @@ void PlateCandidate::AnalysePlate(){
             PixelValue = GetGrayscaleMapValue(x, y);
             PixelIdent = (Image->w*y)+x; // Position of pixel in PixelToLabelMap
 
+            // Skip pixel if its background
             if(PixelValue == 0){
-                continue; // Skip pixel if its background
+                continue;
             }
 
-            // Find Neighbours ( NEIGH THE HOUSE BELLOWED ACROSS THE FIELD)
+            // Find Neighbours
             if(GetGrayscaleMapValue((x-1), y) == PixelValue){ // West Check
                 // Assign the label from the pixel we checked
                  PixelToLabelMap[PixelIdent] = PixelToLabelMap[PixelIdent-1]; // West (To the Left)
@@ -105,13 +131,13 @@ void PlateCandidate::AnalysePlate(){
                                                         return element1.second > element2.second;
                                                     });
 
-    // Limit this to the top 15 labels/regions
+    // Limit this to the top 60 labels/regions
     LabelCount.erase(LabelCount.begin() + 60, LabelCount.end());
 
     std::vector<ROI> BlobRegions;
     for(int i=0; i < LabelCount.size(); i++){
 
-        std::cout << "Processing Label: " << LabelCount[i].first << " Value: " << LabelCount[i].second << std::endl;
+        //std::cout << "Processing Label: " << LabelCount[i].first << " Value: " << LabelCount[i].second << std::endl;
 
         // Set variables for this region
         int xMax = 0;
@@ -146,7 +172,7 @@ void PlateCandidate::AnalysePlate(){
 
         }
 
-        // Now we have boundaries
+        // Now we have boundaries of each Region
         //   xmin   xmax
         //   ymin   ymax
         ROI BlobRegion;
@@ -289,25 +315,44 @@ void PlateCandidate::AnalysePlate(){
 
     // See how many FinalCandidates we have
     if(FinalCandidates.size() >= 4){
-        // Okay match, lets OCR
         std::cout << " >>>>> We have " << FinalCandidates.size() << " characters" << std::endl;
-        for(int i=0; i < FinalCandidates.size(); i++){
-            // Create new OCR instance
-            OCRAnalysis OCR;
-            OCR.LoadBitmapImage(LoadedImage, FinalCandidates[i].Rect); // Create plate instance of defined region
-            OCR.Process(i);
-        }
     }else{
         std::cout << " >>>>> Ignoring plate" << std::endl;
     }
 
+    return FinalCandidates;
+}
 
+void PlateCandidate::ROIFix(ROI &Region){
 
+    // Ensure the ROI cooordinates are within the image bounds, or adjust
+    Rectangle & R = Region.Rect;
 
+    // Validate the x coordinate
+    if(R.x < 0){
+        R.x = 0;
+    }
+    else if(R.x > Image->w){
+        R.x = Image->w; // This should never happen, exception?
+    }
 
+    // Validate the width
+    if(R.x + R.Width > Image->w){
+        R.Width = Image->w - R.x;
+    }
+
+    // Validate the y coordinate
+    if(R.y < 0){
+        R.y = 0;
+    }
+    else if(R.y > Image->h){
+        R.y = Image->h; // This should never happen, exception?
+    }
+
+    // Validate Height
+    if(R.y + R.Height > Image->h){
+        R.Height = Image->h - R.y;
+    }
 
 
 }
-
-
-

@@ -47,9 +47,22 @@ void BitmapImage::LoadBitmapImage(SDL_Surface* InputImage, Rectangle Rect){
     LoadedImage = SDL_ConvertSurface(Image, Image->format, Image->flags); // Duplicate Loaded Image incase of needed restore
 }
 
+void BitmapImage::LoadBitmapImage(SDL_Surface* InputImage){
+    Rectangle R;
+    R.x = 0;
+    R.y = 0;
+    R.Width = InputImage->w;
+    R.Height = InputImage->h;
+    LoadBitmapImage(InputImage, R);
+}
+
 void BitmapImage::RestoreToLoadedImage(){
     SDL_FreeSurface(Image); // Remove the image data
     Image = SDL_ConvertSurface(LoadedImage, LoadedImage->format, LoadedImage->flags); // Load the saved data into Image
+}
+
+void BitmapImage::GetBitmapSurface(SDL_Surface* OutputSurface){
+    OutputSurface = SDL_ConvertSurface(Image, Image->format, Image->flags); // Load the saved data into Image
 }
 
 void BitmapImage::DebugDisplayImageToWindow(std::string Title){

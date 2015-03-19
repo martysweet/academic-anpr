@@ -14,11 +14,15 @@ class PlateCandidate :  public AnalyseImage {
         PlateCandidate();
         virtual ~PlateCandidate();
         void AnalysePlate();
+        ROI GetPlateRegion();
+        std::vector<ROI> GetPlateCharacters();
+        std::vector<ROI> CCA();
 
     protected:
 
 
     private:
+        void ROIFix(ROI &Region);
 
 
 };

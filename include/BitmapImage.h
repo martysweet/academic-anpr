@@ -19,9 +19,12 @@ class BitmapImage
 
         /* Image Loading/Saving Functions */
         void LoadBitmapImage(std::string Filename);
+        void LoadBitmapImage(SDL_Surface* InputImage);
         void LoadBitmapImage(SDL_Surface* InputImage, Rectangle Rect);
         void SaveImageToFile(std::string Filename);
         void RestoreToLoadedImage();
+        void GetBitmapSurface(SDL_Surface* OutputSurface);
+
 
         /* Debug Display */
         void DebugDisplayImageToWindow(std::string Title);
