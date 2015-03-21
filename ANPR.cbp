@@ -11,6 +11,7 @@
 				<Option object_output="obj/debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="testcases/11.jpg --sdl --cases 20" />
 				<Compiler>
 					<Add option="-g" />
 					<Add directory="include" />
@@ -40,18 +41,14 @@
 		<Unit filename="SDL_Wrapper.cpp" />
 		<Unit filename="SDL_Wrapper.h" />
 		<Unit filename="include/ANPRImage.h" />
-		<Unit filename="include/AnalyseImage.h" />
 		<Unit filename="include/BitmapImage.h" />
 		<Unit filename="include/DataStructures.h" />
 		<Unit filename="include/DisjointSet.h" />
-		<Unit filename="include/OCRAnalysis.h" />
 		<Unit filename="include/PlateCandidate.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/ANPRImage.cpp" />
-		<Unit filename="src/AnalyseImage.cpp" />
 		<Unit filename="src/BitmapImage.cpp" />
 		<Unit filename="src/DisjointSet.cpp" />
-		<Unit filename="src/OCRAnalysis.cpp" />
 		<Unit filename="src/PlateCandidate.cpp" />
 		<Extensions>
 			<code_completion />

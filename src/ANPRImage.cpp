@@ -14,7 +14,7 @@ ANPRImage::ANPRImage(std::string FileLocation){
     if(SlashTest == std::string::npos){
         OutputPath = "plate_" + FileLocation.substr(0, FileLocation.length()-DotTest-1) + ".bmp"; // If path contains no slashes
     }else{
-        OutputPath = "plate_" + FileLocation.substr(SlashTest+1, FileLocation.length()-DotTest-3) + ".bmp";
+        OutputPath = "plate_" + FileLocation.substr(SlashTest+1, FileLocation.length()-DotTest-2) + ".bmp";
     }
     // If debug, notify the user of output location
     if(Configuration::Debug && Configuration::SaveOutput){
@@ -53,7 +53,7 @@ bool ANPRImage::ProcessGlobalImage(){
     NumberPlate.LoadBitmapImage(LoadedImage, Region.Rect);
     for(int i = 3; i <= (3 * Configuration::Cases); i += 3){
         // Push the result of this into a vector for later processing
-        CharacterExtractions.push_back(NumberPlate.GetPlateCharacters(i));
+        CharacterExtractions.push_back(NumberPlate.GetPlateCharacters(62));
         // Restore the number plates image for next test
         NumberPlate.RestoreToLoadedImage();
     }
@@ -98,13 +98,13 @@ bool ANPRImage::ProcessGlobalImage(){
     int ExtractionTestCase;
     ExtractionTestCase  = ExtractionMapMatrix[ExtractionVotingMaxID];
 
-    // Output the best result
+
     std::vector<ROI> BestResult = CharacterExtractions.at(ExtractionTestCase);
     std::cout << " >>>> Best Extraction Attempt: " << ExtractionTestCase;
     std::cout << " providing " << BestResult.size() << " characters" << std::endl;
-
     // Merge the characters and output to screen
     MergePlateRegions(BestResult, Region);
+
 
     // If in debug, ask if the user wants to continue to next image
     if(Configuration::Debug){
@@ -117,49 +117,57 @@ bool ANPRImage::ProcessGlobalImage(){
 
 void ANPRImage::MergePlateRegions( std::vector<ROI> Regions, ROI WorkingArea){
 
-    // Add required buffering to each region if requried by the user
-    for(int i = 0; i < Regions.size(); i++){
-        Regions[i].Rect.x -= Configuration::Buffer;
-        Regions[i].Rect.y -= Configuration::Buffer;
-        Regions[i].Rect.Width += Configuration::Buffer*2;
-        Regions[i].Rect.Height += Configuration::Buffer*2;
-    }
+    BitmapImage ResultImage; // Output Surface
+    // Only merge characters if we have enough, else output the WorkingArea
+    if(Regions.size() > 4){
 
-    // Find required width
-    int TotalWidth = std::accumulate(Regions.begin(), Regions.end(), Configuration::Spacing*Regions.size(), [](const int Sum, ROI const &Region) {
-                                                                        return Sum + Region.Rect.Width;
-                                                                    });
-
-    // Find max height
-    ROI THeightRegion = *std::max_element(Regions.begin(), Regions.end(), [] (const ROI &Element1, const ROI &Element2 ){
-                                                                            return Element1.Rect.Height < Element2.Rect.Height;
-                                                                        });
-    int TotalHeight = THeightRegion.Rect.Height;
-
-    // Create the required surface
-    BitmapImage ResultImage;
-    ResultImage.CreateBitmapImage(TotalWidth, TotalHeight, true);
-
-    // Draw each region into new Result Image
-    int StartX = 0;
-    int StartY = 0;
-    int CurrentY = 0;
-    Uint8 R = 0, G = 0, B = 0;
-    for(int i = 0; i < Regions.size(); i++){
-        Rectangle Rect = Regions[i].Rect;
-
-        // Read each pixel
-        for(int x = Rect.x; x < Rect.x + Rect.Width; x++){
-            CurrentY = 0;
-            for(int y = Rect.y; y < Rect.y + Rect.Height; y++){
-                // Write pixel to new image
-                GetRGBValues(Image, x+WorkingArea.Rect.x, y+WorkingArea.Rect.y, &R, &G, &B);
-                ResultImage.SetPixel(StartX, CurrentY, R, G, B);
-                CurrentY++;
-            }
-        StartX++;
+        // Add required buffering to each region if requried by the user
+        for(int i = 0; i < Regions.size(); i++){
+            Regions[i].Rect.x -= Configuration::Buffer;
+            Regions[i].Rect.y -= Configuration::Buffer;
+            Regions[i].Rect.Width += Configuration::Buffer*2;
+            Regions[i].Rect.Height += Configuration::Buffer*2;
         }
-        StartX += Configuration::Spacing;
+
+        // Find required width
+        int TotalWidth = std::accumulate(Regions.begin(), Regions.end(), Configuration::Spacing*Regions.size(), [](const int Sum, ROI const &Region) {
+                                                                            return Sum + Region.Rect.Width;
+                                                                        });
+
+        // Find max height
+        ROI THeightRegion = *std::max_element(Regions.begin(), Regions.end(), [] (const ROI &Element1, const ROI &Element2 ){
+                                                                                return Element1.Rect.Height < Element2.Rect.Height;
+                                                                            });
+        int TotalHeight = THeightRegion.Rect.Height;
+
+        // Create the required surface
+        ResultImage.CreateBitmapImage(TotalWidth, TotalHeight, true);
+
+        // Draw each region into new Result Image
+        int StartX = 0;
+        int StartY = 0;
+        int CurrentY = 0;
+        Uint8 R = 0, G = 0, B = 0;
+        for(int i = 0; i < Regions.size(); i++){
+            Rectangle Rect = Regions[i].Rect;
+
+            // Read each pixel
+            for(int x = Rect.x; x < Rect.x + Rect.Width; x++){
+                CurrentY = 0;
+                for(int y = Rect.y; y < Rect.y + Rect.Height; y++){
+                    // Write pixel to new image
+                    GetRGBValues(Image, x+WorkingArea.Rect.x, y+WorkingArea.Rect.y, &R, &G, &B);
+                    ResultImage.SetPixel(StartX, CurrentY, R, G, B);
+                    CurrentY++;
+                }
+            StartX++;
+            }
+            StartX += Configuration::Spacing;
+        }
+    }else{
+        // Create the required surface
+        std::cout << " >>>>> Attempt <4 outputting whole plate region." << std::endl;
+        ResultImage.LoadBitmapImage(Image, WorkingArea.Rect);
     }
 
     // Display the result

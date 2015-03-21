@@ -117,14 +117,16 @@ std::vector<ROI> PlateCandidate::CCA(){
         }
     }
 
-    // Order by the BlobPixel Occurances - TODO: Can we just read in the map here? Hmmmm
+    // Order by the BlobPixel Occurances - TODO: Can we just read in the map here?
     std::vector<std::pair<int,int>> LabelCount(BlobPixelCount.begin(), BlobPixelCount.end());
     std::sort(LabelCount.begin(), LabelCount.end(), [](const std::pair<int,int> &element1, const std::pair<int,int> &element2) {
                                                         return element1.second > element2.second;
                                                     });
 
     // Limit this to the top 60 labels/regions
-    LabelCount.erase(LabelCount.begin() + 60, LabelCount.end());
+    LabelCount.erase(LabelCount.begin() + 61, LabelCount.end());
+
+    std::cout << LabelCount.size() << std::endl;
 
     std::vector<ROI> BlobRegions;
     for(int i=0; i < LabelCount.size(); i++){
@@ -198,8 +200,8 @@ std::vector<ROI> PlateCandidate::CCA(){
         if( ((1.3 <= d) && (d <= 1.7)) || ((5.2 <= d) && (d <= 5.8))        // 2001
             || ((1.5 <= d) && (d <= 1.9)) || ((4.7 <= d) && (d <= 5.2)) ){  // Pre-2001
             // Good candidate
-            BlobRegions[i].Score = 1000;
-            DrawRectangle(BlobRegions[i].Rect, 255, 255, 0);
+            BlobRegions[i].Score = 1001;
+            DrawRectangle(BlobRegions[i].Rect, 0, 0, 255);
             CharacterCandidate.push_back(BlobRegions[i]);
         }
 
@@ -234,17 +236,18 @@ std::vector<ROI> PlateCandidate::CCA(){
         Point Point2;
         Point Point3;
         Point1.x = CharacterCandidate[i].Rect.x + CharacterCandidate[i].Rect.Width + (CharacterCandidate[i].Rect.Height/2); // This gives roughly 20mm right when Height ~80
-        Point1.y = CharacterCandidate[i].Rect.y;
-        Point2.x = Point1.x;
-        Point2.y = CharacterCandidate[i].Rect.y + (CharacterCandidate[i].Rect.Height/2); // Half way
-        Point3.x = Point1.x;
-        Point3.y = CharacterCandidate[i].Rect.y + CharacterCandidate[i].Rect.Height;
+        Point1.y = CharacterCandidate[i].Rect.y + (CharacterCandidate[i].Rect.Height/2);
+        Point2.x = Point1.x + 5;
+        Point2.y = Point1.y; // Half way
+        Point3.x = Point1.x + 20
+        ;
+        Point3.y = Point1.y;
         DrawLine(Point1, Point3, 255, 153, 0);
 
         // Lets look through all boxes to the right of this one?
             for(int j=i; j < CharacterCandidate.size(); j++){
                 Rectangle R = CharacterCandidate[j].Rect;
-                // Do any coordiates of this box, fit in the region above? TODO: I want this to work
+                // Do any coordiates of this box, fit in the region above? TODO: If line is within box
                 if( (Point1.x >= R.x) && (Point1.x <= R.x + R.Width) && (Point1.y >= R.y) && (Point1.y <= R.y + R.Height)
                  || (Point2.x >= R.x) && (Point2.x <= R.x + R.Width) && (Point2.y >= R.y) && (Point2.y <= R.y + R.Height)
                  || (Point3.x >= R.x) && (Point3.x <= R.x + R.Width) && (Point3.y >= R.y) && (Point3.y <= R.y + R.Height) ){
@@ -296,6 +299,7 @@ std::vector<ROI> PlateCandidate::CCA(){
 
     // See how many FinalCandidates we have
     if(Configuration::Debug){
+        DebugDisplayImageToWindow("CCA");
         if(FinalCandidates.size() >= 4){
             std::cout << " >> We have " << FinalCandidates.size() << " characters" << std::endl;
         }else{
