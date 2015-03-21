@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <iterator>
 
 #include "DataStructures.h"
 
@@ -14,7 +15,7 @@ class ANPRImage: public AnalyseImage  {
     public:
         ANPRImage();
         /* Callable Functions */
-        bool ProcessGlobalImage(int MinimumBandHeight);
+        bool ProcessGlobalImage(int TestCases=12);
 
 
     protected:
@@ -27,7 +28,7 @@ class ANPRImage: public AnalyseImage  {
         std::vector<ROI> ExtractPotentialPlateRegion(ROI Region);
         std::vector<ROI> HoughHorizontalBandDetection(ROI InputRegion, float HoughThreshold = 0.5,  int MinimumBandHeight = 10, int PixelChunking = 5);
         void RefinePotentialPlateBand(ProjectionAnalysis PA);
-
+        void OutputCharactersToScreen(std::vector<ROI> Regions, ROI WorkingArea, int Spacing = 5, int Buffer = 2);
 };
 
 #endif // ANPRIMAGE_H

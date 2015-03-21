@@ -15,7 +15,7 @@ class PlateCandidate :  public AnalyseImage {
         virtual ~PlateCandidate();
         void AnalysePlate();
         ROI GetPlateRegion();
-        std::vector<ROI> GetPlateCharacters();
+        std::vector<ROI> GetPlateCharacters(int MonochromeRegion = 15);
         std::vector<ROI> CCA();
 
     protected:

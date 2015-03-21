@@ -56,6 +56,18 @@ void BitmapImage::LoadBitmapImage(SDL_Surface* InputImage){
     LoadBitmapImage(InputImage, R);
 }
 
+void BitmapImage::CreateBitmapImage(int w, int h, bool White){
+    Image = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0 ,0);
+    if(White){
+        for(int y = 0; y <= Image->h-1; y++){
+            for(int x = 0; x <= Image->w-1; x++){
+                SetRGBValues(Image, x, y, 255, 255, 255);
+            }
+        }
+    }
+    LoadedImage = SDL_ConvertSurface(Image, Image->format, Image->flags);
+}
+
 void BitmapImage::RestoreToLoadedImage(){
     SDL_FreeSurface(Image); // Remove the image data
     Image = SDL_ConvertSurface(LoadedImage, LoadedImage->format, LoadedImage->flags); // Load the saved data into Image
@@ -189,7 +201,9 @@ void BitmapImage::DrawRectangle(int x, int y, int w, int h,  Uint8 R, Uint8 G, U
     DrawLine(x,   y,   x,   y+h, R, G, B);
 }
 
-
+void BitmapImage::SetPixel(int x, int y, Uint8 R, Uint8 G, Uint8 B){
+    SetRGBValues(Image, x, y, R, G, B);
+}
 
 /* Whole Image Editing Function */
 void BitmapImage::ImageToBW(int Threshold, bool Inverted){
@@ -326,9 +340,9 @@ void BitmapImage::ImageToGrayscale(){
     }
 }
 
-void BitmapImage::NormaliseImage(){
+void BitmapImage::NormaliseImage(int nMax){
     CreateGrayscaleMapArray();
-    int iMin = 255, iMax = 0, nMin = 0, nMax = 100, Intensity, NewIntensity;
+    int iMin = 255, iMax = 0, nMin = 0, Intensity, NewIntensity;
     // Find max/min of image
     for(int y = 0; y < Image->h; y++){
         for(int x = 0; x < Image->w; x++){

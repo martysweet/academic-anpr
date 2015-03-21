@@ -18,14 +18,14 @@ int main(){
     InputImage = new ANPRImage *[10]; // Amount of images being worked on
 
     // Load Image
-    for(int i=8; i <= 9; i++){
+    for(int i=1; i <= 9; i++){
 
         std::string Location = "00" + std::to_string(i) + ".jpg";
         std::cout << "Processing: " << Location << std::endl;
 
         InputImage[i] = new ANPRImage;
         InputImage[i]->LoadBitmapImage(Location);
-        InputImage[i]->ProcessGlobalImage(50);
+        InputImage[i]->ProcessGlobalImage(12);
         delete InputImage[i];
 
     }

@@ -21,10 +21,14 @@ class BitmapImage
         void LoadBitmapImage(std::string Filename);
         void LoadBitmapImage(SDL_Surface* InputImage);
         void LoadBitmapImage(SDL_Surface* InputImage, Rectangle Rect);
+        void CreateBitmapImage(int w, int h, bool White = false);
         void SaveImageToFile(std::string Filename);
         void RestoreToLoadedImage();
         void GetBitmapSurface(SDL_Surface* OutputSurface);
+        void SetPixel(int x, int y, Uint8 R, Uint8 G, Uint8 B);
 
+
+        void ImageToAdaptiveMonochrome(int Area=30, bool Inverted = false);
 
         /* Debug Display */
         void DebugDisplayImageToWindow(std::string Title);
@@ -50,9 +54,9 @@ class BitmapImage
         void ImageToBW(int Threshold = 200, bool Inverted = false);
         void CannyEdgeDetection();
         void ImageToGrayscale();
-        void NormaliseImage();
+        void NormaliseImage(int nMax = 100);
         void HistogramEqualisation();
-        void ImageToAdaptiveMonochrome(int Area=30, bool Inverted = false);
+
 
         /* Image Analysis Functions */
         void CreateGrayscaleMapArray();

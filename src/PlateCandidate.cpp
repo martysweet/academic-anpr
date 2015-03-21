@@ -38,12 +38,12 @@ ROI PlateCandidate::GetPlateRegion(){
     return Region;
 }
 
-std::vector<ROI> PlateCandidate::GetPlateCharacters(){
+std::vector<ROI> PlateCandidate::GetPlateCharacters(int MonochromeRegion){
 
     // Preprocess the plate
+    NormaliseImage(); // 5 works for bright images, but for good images is way to much...
     HistogramEqualisation();
-    NormaliseImage();
-    ImageToAdaptiveMonochrome(15, true);
+    ImageToAdaptiveMonochrome(MonochromeRegion, true);
 
     // Get the characters from the region defined
     return CCA();
@@ -308,9 +308,9 @@ std::vector<ROI> PlateCandidate::CCA(){
         }
     }
 
-    CreateWindowFlags("Plate Candidate CCA", Image->w, Image->h, 0);
+   /* CreateWindowFlags("Plate Candidate CCA", Image->w, Image->h, 0);
     DisplaySurfaceUntilClose(Image);
-    CloseWindow();
+    CloseWindow();*/
 
 
     // See how many FinalCandidates we have
