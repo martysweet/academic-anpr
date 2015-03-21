@@ -26,7 +26,7 @@ class BitmapImage
         void SetPixel(int x, int y, Uint8 R, Uint8 G, Uint8 B);
 
         /* Image Editing */
-        void ImageToAdaptiveMonochrome(int Area=30, bool Inverted = false);
+        void ImageToAdaptiveMonochrome(int Area, bool Inverted = false);
 
         /* Debug Display */
         void DebugDisplayImageToWindow(std::string Title);

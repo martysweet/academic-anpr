@@ -11,10 +11,12 @@
 
 class ANPRImage: public BitmapImage  {
     public:
-        bool ProcessGlobalImage(int TestCases=12);
+        ANPRImage(std::string FileLocation);
+        bool ProcessGlobalImage();
 
     private:
-        void OutputCharactersToScreen(std::vector<ROI> Regions, ROI WorkingArea, int Spacing = 5, int Buffer = 2);
+        void MergePlateRegions(std::vector<ROI> Regions, ROI WorkingArea);
+        std::string OutputPath;
 };
 
 #endif // ANPRIMAGE_H

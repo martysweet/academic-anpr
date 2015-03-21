@@ -23,7 +23,7 @@ SDL_Surface* LoadImage(const char* ImageLocation)
 	if(SDL_S_Return == NULL)
 	{
 		// Send out an Error Message
-		fprintf(stderr, "Error: %s\n", IMG_GetError());
+		//fprintf(stderr, "Error: %s\n", IMG_GetError());
 	}
 
 	// Return the Surface (Will be NULL if file isn't loaded)

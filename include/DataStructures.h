@@ -21,4 +21,14 @@ struct Point {
     int y;
 };
 
+namespace Configuration {
+    extern bool Debug;
+    extern bool SDLOutput;
+    extern bool SaveOutput;
+    extern int  Cases;
+    extern int  Buffer;
+    extern int  Spacing;
+};
+
+
 #endif // DATASTRUCT_H

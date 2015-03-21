@@ -1,6 +1,29 @@
 #include "ANPRImage.h"
 
-bool ANPRImage::ProcessGlobalImage(int TestCases){
+ANPRImage::ANPRImage(std::string FileLocation){
+    // Attempt to load the input file
+    LoadBitmapImage(FileLocation);
+    OutputPath = "plate_" + FileLocation;
+    // Create output file path, taking into account / \ paths and changing the file extension
+    int SlashTest = FileLocation.find_last_of("/"); // Unix Paths
+    int DotTest = FileLocation.find_last_of(".");
+    if(SlashTest == std::string::npos){
+        SlashTest = FileLocation.find_last_of("\\"); // Windows Paths
+    }
+    // Compute the output filename
+    if(SlashTest == std::string::npos){
+        OutputPath = "plate_" + FileLocation.substr(0, FileLocation.length()-DotTest-1) + ".bmp"; // If path contains no slashes
+    }else{
+        OutputPath = "plate_" + FileLocation.substr(SlashTest+1, FileLocation.length()-DotTest-3) + ".bmp";
+    }
+    // If debug, notify the user of output location
+    if(Configuration::Debug && Configuration::SaveOutput){
+        std::cout << "Output: " << OutputPath << std::endl;
+    }
+}
+
+
+bool ANPRImage::ProcessGlobalImage(){
 
     // Make the image Grayscale for all further operations
     ImageToGrayscale();
@@ -16,9 +39,11 @@ bool ANPRImage::ProcessGlobalImage(int TestCases){
     }
 
     // Debug found region
-    DrawRectangle(Region.Rect, 255, 0, 0);
-    std::cout << "Region found: " << Region.Rect.x << " " << Region.Rect.y << " " << Region.Rect.Height <<" " << Region.Rect.Width << std::endl;
-    DebugDisplayImageToWindow("Yay");
+    if(Configuration::Debug){
+        DrawRectangle(Region.Rect, 255, 0, 0);
+        std::cout << " >>> Region found: " << Region.Rect.x << " " << Region.Rect.y << " " << Region.Rect.Height <<" " << Region.Rect.Width << std::endl;
+        DebugDisplayImageToWindow("Located Plate Region");
+    }
 
     // Scale the image according to user input, each time checking charactors and scoring
     std::vector< std::vector<ROI> > CharacterExtractions;
@@ -26,7 +51,7 @@ bool ANPRImage::ProcessGlobalImage(int TestCases){
     // Load the numberplate
     PlateCandidate NumberPlate;
     NumberPlate.LoadBitmapImage(LoadedImage, Region.Rect);
-    for(int i = 3; i <= (3*TestCases); i += 3){
+    for(int i = 3; i <= (3 * Configuration::Cases); i += 3){
         // Push the result of this into a vector for later processing
         CharacterExtractions.push_back(NumberPlate.GetPlateCharacters(i));
         // Restore the number plates image for next test
@@ -75,30 +100,33 @@ bool ANPRImage::ProcessGlobalImage(int TestCases){
 
     // Output the best result
     std::vector<ROI> BestResult = CharacterExtractions.at(ExtractionTestCase);
-    std::cout << " >>>> Best Extraction Attempt: " << ExtractionVote;
+    std::cout << " >>>> Best Extraction Attempt: " << ExtractionTestCase;
     std::cout << " providing " << BestResult.size() << " characters" << std::endl;
 
     // Merge the characters and output to screen
-    OutputCharactersToScreen(BestResult, Region);
+    MergePlateRegions(BestResult, Region);
 
     // If in debug, ask if the user wants to continue to next image
-    std::cout << "Press any key to continue...";
-    std::cin.ignore();
+    if(Configuration::Debug){
+        std::cout << "Press any key to continue...";
+        std::cin.ignore();
+    }
 
     return true;
 }
 
-void ANPRImage::OutputCharactersToScreen( std::vector<ROI> Regions, ROI WorkingArea, int Spacing, int Buffer ){
+void ANPRImage::MergePlateRegions( std::vector<ROI> Regions, ROI WorkingArea){
+
     // Add required buffering to each region if requried by the user
     for(int i = 0; i < Regions.size(); i++){
-        Regions[i].Rect.x -= Buffer;
-        Regions[i].Rect.y -= Buffer;
-        Regions[i].Rect.Width += Buffer*2;
-        Regions[i].Rect.Height += Buffer*2;
+        Regions[i].Rect.x -= Configuration::Buffer;
+        Regions[i].Rect.y -= Configuration::Buffer;
+        Regions[i].Rect.Width += Configuration::Buffer*2;
+        Regions[i].Rect.Height += Configuration::Buffer*2;
     }
 
     // Find required width
-    int TotalWidth = std::accumulate(Regions.begin(), Regions.end(), Spacing*Regions.size(), [](const int Sum, ROI const &Region) {
+    int TotalWidth = std::accumulate(Regions.begin(), Regions.end(), Configuration::Spacing*Regions.size(), [](const int Sum, ROI const &Region) {
                                                                         return Sum + Region.Rect.Width;
                                                                     });
 
@@ -131,9 +159,16 @@ void ANPRImage::OutputCharactersToScreen( std::vector<ROI> Regions, ROI WorkingA
             }
         StartX++;
         }
-        StartX += Spacing;
+        StartX += Configuration::Spacing;
     }
 
     // Display the result
-    ResultImage.DebugDisplayImageToWindow("Result");
+    if(Configuration::SDLOutput){
+        ResultImage.DebugDisplayImageToWindow("Result");
+    }
+
+    // Save to file
+    if(Configuration::SaveOutput){
+        ResultImage.SaveImageToFile(OutputPath);
+    }
 }

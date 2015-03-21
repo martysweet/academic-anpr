@@ -9,8 +9,8 @@ void BitmapImage::LoadBitmapImage(std::string Filename){
     Image = LoadImage(Filename.c_str());
     // Check
     if(Image == NULL){
-        std::cerr << "Cannot load " << Filename << std::endl;
-        std::exit(1);
+        std::cerr << " > Cannot load image!" << std::endl;
+        throw 0;
     }
     LoadedImage = Image; // Duplicate Loaded Image
 }

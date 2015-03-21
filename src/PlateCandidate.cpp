@@ -198,10 +198,9 @@ std::vector<ROI> PlateCandidate::CCA(){
         if( ((1.3 <= d) && (d <= 1.7)) || ((5.2 <= d) && (d <= 5.8))        // 2001
             || ((1.5 <= d) && (d <= 1.9)) || ((4.7 <= d) && (d <= 5.2)) ){  // Pre-2001
             // Good candidate
-            BlobRegions[i].Score = 1001;
+            BlobRegions[i].Score = 1000;
             DrawRectangle(BlobRegions[i].Rect, 255, 255, 0);
             CharacterCandidate.push_back(BlobRegions[i]);
-            std::cout << "2001+" << std::endl;
         }
 
 
@@ -230,8 +229,6 @@ std::vector<ROI> PlateCandidate::CCA(){
 
     // For each box, starting with smallest x
     for(int i = 0; i < CharacterCandidate.size(); i++){
-
-        std::cout << CharacterCandidate[i].Rect.x << std::endl;
         // Compute search region
         Point Point1;
         Point Point2;
@@ -253,7 +250,9 @@ std::vector<ROI> PlateCandidate::CCA(){
                  || (Point3.x >= R.x) && (Point3.x <= R.x + R.Width) && (Point3.y >= R.y) && (Point3.y <= R.y + R.Height) ){
                     // We have a match!
                     CharGroup.Union(i,j);
-                    std::cout << "Match" << i << " " << j << std::endl;
+                    if(Configuration::Debug){
+                        std::cout << " > Union join of " << i << "," << j << std::endl;
+                    }
                 }
             }
     }
@@ -261,11 +260,7 @@ std::vector<ROI> PlateCandidate::CCA(){
     // Now we should have sets of unions whose boxes are close to eachother
     // Find highest occurance of a set
     std::map<int,int> SetVoteCount;
-
-
     for(int i = 0; i < CharacterCandidate.size(); i++){
-        std::cout << CharGroup.Find(i) << std::endl;
-
         if(SetVoteCount.find(CharGroup.Find(i)) == SetVoteCount.end()){
             SetVoteCount[CharGroup.Find(i)] = 1;
         }else{
@@ -288,7 +283,6 @@ std::vector<ROI> PlateCandidate::CCA(){
     int BestGroup = 0; // If this isn't set using the if statement, it won't matter anyway
     if(SetVote.size() > 0){
         BestGroup = SetVote[0].first;
-        std::cout << "Best:" << BestGroup << std::endl;
     }
 
     // If the candidate == BestGroup, lets make it a new colour
@@ -300,16 +294,13 @@ std::vector<ROI> PlateCandidate::CCA(){
         }
     }
 
-   /* CreateWindowFlags("Plate Candidate CCA", Image->w, Image->h, 0);
-    DisplaySurfaceUntilClose(Image);
-    CloseWindow();*/
-
-
     // See how many FinalCandidates we have
-    if(FinalCandidates.size() >= 4){
-        std::cout << " >>>>> We have " << FinalCandidates.size() << " characters" << std::endl;
-    }else{
-        std::cout << " >>>>> Ignoring plate" << std::endl;
+    if(Configuration::Debug){
+        if(FinalCandidates.size() >= 4){
+            std::cout << " >> We have " << FinalCandidates.size() << " characters" << std::endl;
+        }else{
+            std::cout << " >> Ignoring plate" << std::endl;
+        }
     }
 
     return FinalCandidates;
