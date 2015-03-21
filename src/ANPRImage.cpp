@@ -1,11 +1,5 @@
 #include "ANPRImage.h"
 
-
-ANPRImage::ANPRImage(){
-
-}
-
-
 bool ANPRImage::ProcessGlobalImage(int TestCases){
 
     // Make the image Grayscale for all further operations
@@ -143,12 +137,3 @@ void ANPRImage::OutputCharactersToScreen( std::vector<ROI> Regions, ROI WorkingA
     // Display the result
     ResultImage.DebugDisplayImageToWindow("Result");
 }
-
-
-
-
-
-
-
-
-

@@ -1,13 +1,5 @@
 #include "PlateCandidate.h"
 
-PlateCandidate::PlateCandidate(){
-    //ctor
-}
-
-PlateCandidate::~PlateCandidate(){
-    //dtor
-}
-
 ROI PlateCandidate::GetPlateRegion(){
 
     // Preprocess the plate

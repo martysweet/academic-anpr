@@ -1,24 +1,5 @@
 #include "BitmapImage.h"
 
-BitmapImage::BitmapImage(){
-
-    // Create needed Convolution Matricies
-    // This is done here to allow difference sizes of matrices in one datatype
-    InitialiseConvolutionMatrix(CannyX,      3, 3, 1,  {-1,0,1,-2,0,2,-1,0,1});
-    InitialiseConvolutionMatrix(CannyY,      3, 3, 1,  {-1,-2,-1,0,0,0,1,2,1});
-    InitialiseConvolutionMatrix(HorizontalRank,     21, 3, 1,  { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                                                                0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,0.04,
-                                                                0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  });
-    InitialiseConvolutionMatrix(WhiteFill,   3, 3, 4,  {1, 1, 1, 1, 5, 1, 1, 1, 1});
-}
-
-BitmapImage::~BitmapImage(){
-    //dtor
-    //IntegralArray.clear();
-
-}
-
-
 /* Image Loading/Saving Functions */
 void BitmapImage::SaveImageToFile(std::string Filename){
     SaveImageBMP(Image, Filename.c_str());
@@ -83,72 +64,6 @@ void BitmapImage::DebugDisplayImageToWindow(std::string Title){
     CloseWindow();
 }
 
-/* Matrix Manipulation Functions */
-void  BitmapImage::InitialiseConvolutionMatrix(ConvolutionMatrix &Struct, int Columns, int Rows, float Weight, std::initializer_list<float> List){
-    Struct.Columns   = Columns;
-    Struct.Rows      = Rows;
-    Struct.Weight    = Weight;
-    Struct.Matrix.insert( Struct.Matrix.end(), List ); // Requires C++11
-}
-
-float BitmapImage::ProcessKernelFilter(int x, int y, ConvolutionMatrix Kernel){
-
-        float Total = 0;
-
-        // Integer Division
-        int h = Kernel.Columns/2;
-        int v = Kernel.Rows/2;
-
-        // m = rows | n = columns
-        for(int m=0; m < Kernel.Rows; m++){
-            for(int n=0; n < Kernel.Columns; n++){
-
-                //std::cout << GetGrayscaleMapValue(x-h+n, y-v+m) << std::endl;
-                Total += GetGrayscaleMapValue(x-h+n, y-v+m) * Kernel.Matrix[ ((Kernel.Columns)*m) + n ];
-
-            }
-            //std::cout << m << ",";
-        }
-
-        return abs(Total/Kernel.Weight);    // Round to INT
-}
-
-void  BitmapImage::ImageConvolutionMatrixTransformation(std::vector<ConvolutionMatrix> Convolutions){
-    // ALways Create a Grayscale Array for the current state
-    CreateGrayscaleMapArray();
-
-    // Create new Image
-    SDL_Surface* DestinationImage = CreateNewImage(Image->w, Image->h);
-
-    int Pixel;
-
-    for(int y = 0; y < Image->h; y++){
-        for(int x = 0; x < Image->w; x++){
-
-        Pixel = 0;
-        for(int c = 0; c < Convolutions.size(); c++){
-            Pixel  += ProcessKernelFilter(x, y, Convolutions[c]);   // Process the Convolution Matrix
-        }
-
-
-        // Cap high values at 255
-        if(Pixel > 255){
-            Pixel = 255;
-        }
-
-
-        // Set in new image
-        SetRGBValues(DestinationImage, x, y, Pixel, Pixel, Pixel);
-
-
-        }
-    }
-
-   Image = DestinationImage;
-
-}
-
-
 /* Line Drawing Functions */
 void BitmapImage::OrderCoordinates(int &x1, int &y1, int &x2, int &y2){
     if(x2 < x1){
@@ -206,128 +121,6 @@ void BitmapImage::SetPixel(int x, int y, Uint8 R, Uint8 G, Uint8 B){
 }
 
 /* Whole Image Editing Function */
-void BitmapImage::ImageToBW(int Threshold, bool Inverted){
-    Uint8 R = 0, G = 0, B = 0;
-    for(int y = 0; y < Image->h; y++){
-        for(int x = 0; x < Image->w; x++){
-            GetRGBValues(Image, x, y, &R, &G, &B);
-            if(R > Threshold){
-                if(Inverted = true){
-                    SetRGBValues(Image, x, y, 0, 0, 0);
-                }else{
-                    SetRGBValues(Image, x, y, 255, 255, 255);
-                }
-            }else{
-                if(Inverted = true){
-                    SetRGBValues(Image, x, y, 255, 255, 255);
-                }else{
-                    SetRGBValues(Image, x, y, 0, 0, 0);
-                }
-                SetRGBValues(Image, x, y, 255,255,255);
-            }
-        }
-    }
-}
-
-void BitmapImage::CannyEdgeDetection(){
-    // ALways Create a Grayscale Array for the current state
-    CreateGrayscaleMapArray();
-
-    // Create new Image
-    SDL_Surface* DestinationImage = CreateNewImage(Image->w, Image->h);
-
-    int LowerThreshold=20, UpperThreshold=LowerThreshold*3;
-
-    int Pixel, Gx, Gy, I1, I2;
-    float A, G;
-
-    for(int y = 0; y < Image->h; y++){
-        for(int x = 0; x < Image->w; x++){
-
-        G = 0;
-        Gx = ProcessKernelFilter(x, y, CannyX); // Apply Filters
-        Gy = ProcessKernelFilter(x, y, CannyY);
-        G  = sqrt((Gx*Gx) + (Gy*Gy));   // Calculate magnitude
-        if(Gx == 0){
-            A = 0;
-        }else{
-            A  = atan(Gy/Gx)*(180/M_PI);               // Angle
-        }
-
-
-        // Round Angles
-        if(((0 < A) && (A <= 22.5)) || ((157.5 < A) && (A <= 180))){ // Right operator always </>= to catch all value
-            A  = 0; // Horizontal
-            I1 = GetGrayscaleMapValue(x-1, y);
-            I2 = GetGrayscaleMapValue(x+1, y);
-        }
-        else if((22.5 < A) && (A <= 67.5)){
-            A = 45; // +ve Diagonal
-            I1 = GetGrayscaleMapValue(x+1, y+1);
-            I2 = GetGrayscaleMapValue(x-1, y-1);
-        }
-        else if((67.5 < A) && (A <= 122.5)){
-            A = 90; // Vertical
-            I1 = GetGrayscaleMapValue(x, y-1);
-            I2 = GetGrayscaleMapValue(x, y+1);
-        }
-        else if((112.5 < A) && (A <= 157.5)){
-            A = 135; // -ve Diagonal
-            I1 = GetGrayscaleMapValue(x-1, y-1);
-            I2 = GetGrayscaleMapValue(x+1, y+1);
-        }
-
-        // Suppress if less than gradients, cleans the image
-        if( G < I1 || G < I2){
-            G = 0;
-        }
-
-        // HYSTERSIS
-        if(G >= UpperThreshold){
-            G = 255;
-        }
-        else if(G <= LowerThreshold){
-            G = 0;
-        }
-        else if(LowerThreshold < G < UpperThreshold){
-            // Accept if connected to pixel > UpperThreshold
-            bool Accept = false;
-            for(int m=-1; m < 2; m++){
-                for(int n=-1; n < 2; n++){
-                    if(GetGrayscaleMapValue(x+n,y+m) > UpperThreshold){
-                        Accept = true;
-                        break;
-                    }
-                if(Accept == true) break;
-                }
-            }
-            // Reject the value
-            if(Accept == false){
-             G = 0;
-            }else{
-             G = 255;
-            }
-        }
-
-
-
-        // Cap high values at 255
-        if(G > 255){
-            G = 255;
-        }
-
-
-        // Set in new image
-        SetRGBValues(DestinationImage, x, y, G, G, G);
-
-
-        }
-    }
-
-   Image = DestinationImage;
-
-}
-
 void BitmapImage::ImageToGrayscale(){
     Uint8 R = 0, G = 0, B = 0;
     int s = 0; // Sampled variable
@@ -464,8 +257,6 @@ int  BitmapImage::GetGrayscaleMapValue(int x, int y){
     }
 }
 
-
-
 void BitmapImage::CreateIntegralArray(){
     Uint8 R = 0, G = 0, B = 0;
     int element = 0;
@@ -525,4 +316,3 @@ int  BitmapImage::GetIntegralAreaAverage(int x, int y, int Area){
     // Return the Average
     return (a+d-c-b)/((Area*Area)+Area);
 }
-

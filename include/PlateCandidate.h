@@ -3,23 +3,21 @@
 
 #include <vector>
 #include <cmath>
+#include <set>
+#include <algorithm>
+
+#include "BitmapImage.h"
 #include "DataStructures.h"
 #include "DisjointSet.h"
-#include <set>
 
-#include "AnalyseImage.h"
-#include "OCRAnalysis.h"
-class PlateCandidate :  public AnalyseImage {
+class PlateCandidate :  public BitmapImage {
     public:
-        PlateCandidate();
-        virtual ~PlateCandidate();
         void AnalysePlate();
         ROI GetPlateRegion();
         std::vector<ROI> GetPlateCharacters(int MonochromeRegion = 15);
         std::vector<ROI> CCA();
 
     protected:
-
 
     private:
         void ROIFix(ROI &Region);
