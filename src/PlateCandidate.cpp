@@ -17,10 +17,10 @@ ROI PlateCandidate::GetPlateRegion(){
     if(PlateCandidates.size() > 0){
         Region.Rect.x      = PlateCandidates[0].Rect.x - Image->w*0.2;      // First char x + 0.3ImageW
         Region.Rect.y      = PlateCandidates[0].Rect.y - Image->h*0.1;      // First char y + 0.3ImageH
-        Region.Rect.Height = PlateCandidates[0].Rect.Height + Image->h*0.2; // First char Height + 0.3ImageH
+        Region.Rect.Height = PlateCandidates[0].Rect.Height + Image->h*0.3; // First char Height + 0.3ImageH
             // Distance between the first char and last char + width of the last char + 0.3ImageW
         Region.Rect.Width  = PlateCandidates[PlateCandidates.size()-1].Rect.x - PlateCandidates[0].Rect.x
-                            + PlateCandidates[PlateCandidates.size()-1].Rect.Width + Image->w*0.6;
+                            + PlateCandidates[PlateCandidates.size()-1].Rect.Width + Image->w*0.8;
 
         // Verify and adjust so the region is within the bounds of the image
         ROIFix( Region ); // Passed via reference
@@ -124,9 +124,9 @@ std::vector<ROI> PlateCandidate::CCA(){
                                                     });
 
     // Limit this to the top 60 labels/regions
-    LabelCount.erase(LabelCount.begin() + 61, LabelCount.end());
-
-    std::cout << LabelCount.size() << std::endl;
+    if(LabelCount.size() > 60){
+        LabelCount.erase(LabelCount.begin() + 60, LabelCount.end());
+    }
 
     std::vector<ROI> BlobRegions;
     for(int i=0; i < LabelCount.size(); i++){
@@ -197,10 +197,10 @@ std::vector<ROI> PlateCandidate::CCA(){
         }
 
         // Normal Char | 1 or L
-        if( ((1.3 <= d) && (d <= 1.7)) || ((5.2 <= d) && (d <= 5.8))        // 2001
-            || ((1.5 <= d) && (d <= 1.9)) || ((4.7 <= d) && (d <= 5.2)) ){  // Pre-2001
+        if( ((1.2 <= d) && (d <= 1.7)) || ((5.2 <= d) && (d <= 5.8))        // 2001
+            || ((1.5 <= d) && (d <= 2.1)) || ((4.7 <= d) && (d <= 5.2)) ){  // Pre-2001
             // Good candidate
-            BlobRegions[i].Score = 1001;
+            BlobRegions[i].Score = h*w; // Larger blobs have a higher score
             DrawRectangle(BlobRegions[i].Rect, 0, 0, 255);
             CharacterCandidate.push_back(BlobRegions[i]);
         }
@@ -209,7 +209,7 @@ std::vector<ROI> PlateCandidate::CCA(){
 
 
     }
-    // Clean up all CCA varables here
+    // Clean up varables here
     BlobRegions.clear();
     PixelToLabelMap.clear();
 
@@ -239,8 +239,7 @@ std::vector<ROI> PlateCandidate::CCA(){
         Point1.y = CharacterCandidate[i].Rect.y + (CharacterCandidate[i].Rect.Height/2);
         Point2.x = Point1.x + 5;
         Point2.y = Point1.y; // Half way
-        Point3.x = Point1.x + 20
-        ;
+        Point3.x = Point1.x + 20;
         Point3.y = Point1.y;
         DrawLine(Point1, Point3, 255, 153, 0);
 
