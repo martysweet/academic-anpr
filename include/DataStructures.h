@@ -3,6 +3,7 @@
 
 #include <vector>
 
+/* Rectangle */
 struct Rectangle {
     int x;
     int y;
@@ -10,17 +11,20 @@ struct Rectangle {
     int Height;
 };
 
+/* Region of Interest */
 struct ROI {
     Rectangle Rect;
     int Score = 0;
     int Pixels = 0;
 };
 
+/* 2D Point */
 struct Point {
     int x;
     int y;
 };
 
+/* Global Configuration */
 namespace Configuration {
     extern bool Debug;
     extern bool SDLOutput;

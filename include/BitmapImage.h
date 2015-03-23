@@ -49,9 +49,7 @@ class BitmapImage
         /* Image Analysis Functions */
         void CreateGrayscaleMapArray();
         int  GetGrayscaleMapValue(int x, int y);
-        void CreateIntegralArray();
         int  GetIntegralValue(int x, int y);
-        int  GetIntegralAreaAverage(int x, int y, int Area);
 
 
     private:
@@ -61,6 +59,11 @@ class BitmapImage
 
         /* Line Drawing Functions */
         void OrderCoordinates(int &x1, int &y1, int &x2, int &y2);
+
+        /* Image Analysis Functions */
+        void CreateIntegralArray();
+        int  GetIntegralAreaAverage(int x, int y, int Area);
+
 };
 
 #endif // BITMAPIMAGE_H

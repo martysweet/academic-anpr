@@ -1,30 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="Debug" />
-	<File name="src/BitmapImage.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<ActiveTarget name="Release" />
+	<File name="include/DataStructures.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="347" topLine="0" />
+			<Cursor1 position="337" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="include/PlateCandidate.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="382" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="src/DisjointSet.cpp" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1422" topLine="0" />
 		</Cursor>
 		<Folding>
-			<Collapse line="17" />
-			<Collapse line="30" />
-			<Collapse line="39" />
-			<Collapse line="51" />
+			<Collapse line="3" />
+			<Collapse line="10" />
+			<Collapse line="19" />
 		</Folding>
 	</File>
-	<File name="include/DisjointSet.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="SDL_Wrapper.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="384" topLine="0" />
+			<Cursor1 position="515" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="include/PlateCandidate.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="148" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="src/DisjointSet.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="257" topLine="3" />
+			<Cursor1 position="4356" topLine="83" />
 		</Cursor>
 	</File>
 	<File name="include/ANPRImage.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -32,19 +36,14 @@
 			<Cursor1 position="417" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src/PlateCandidate.cpp" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src/ANPRImage.cpp" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="6350" topLine="119" />
-		</Cursor>
-	</File>
-	<File name="main.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4102" topLine="83" />
+			<Cursor1 position="8593" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="include/BitmapImage.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="823" topLine="6" />
+			<Cursor1 position="2071" topLine="24" />
 		</Cursor>
 	</File>
 	<File name="SDL_Wrapper.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -52,19 +51,46 @@
 			<Cursor1 position="1361" topLine="31" />
 		</Cursor>
 	</File>
-	<File name="src/ANPRImage.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
+	<File name="include/DisjointSet.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1316" topLine="33" />
+			<Cursor1 position="92" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="SDL_Wrapper.cpp" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src/BitmapImage.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="515" topLine="0" />
+			<Cursor1 position="10132" topLine="0" />
 		</Cursor>
+		<Folding>
+			<Collapse line="9" />
+			<Collapse line="20" />
+			<Collapse line="34" />
+			<Collapse line="44" />
+			<Collapse line="57" />
+			<Collapse line="63" />
+			<Collapse line="68" />
+			<Collapse line="76" />
+			<Collapse line="88" />
+			<Collapse line="93" />
+			<Collapse line="114" />
+			<Collapse line="120" />
+			<Collapse line="132" />
+			<Collapse line="138" />
+			<Collapse line="151" />
+			<Collapse line="179" />
+			<Collapse line="219" />
+			<Collapse line="253" />
+			<Collapse line="267" />
+			<Collapse line="280" />
+			<Collapse line="296" />
+			<Collapse line="305" />
+		</Folding>
 	</File>
-	<File name="include/DataStructures.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src/PlateCandidate.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="358" topLine="0" />
+			<Cursor1 position="13621" topLine="0" />
 		</Cursor>
+		<Folding>
+			<Collapse line="8" />
+		</Folding>
 	</File>
 </CodeBlocks_layout_file>

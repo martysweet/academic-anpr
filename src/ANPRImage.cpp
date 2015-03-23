@@ -21,7 +21,15 @@ ANPRImage::ANPRImage(std::string FileLocation){
     }
 }
 
-
+/*
+    Process an image and output the result
+     1) Grayscale
+     2) Find plate region
+     3) Find characters for several monochrome manipulations
+     4) Find the best result
+     5) Merge result into new image
+     6) Output result
+*/
 bool ANPRImage::ProcessGlobalImage(){
 
     // Make the image Grayscale for all further operations
@@ -44,7 +52,7 @@ bool ANPRImage::ProcessGlobalImage(){
         DebugDisplayImageToWindow("Located Plate Region");
     }
 
-    // Scale the image according to user input, each time checking charactors and scoring
+    // Adjust monochroming area according to user input, each time checking charactors and scoring
     std::vector< std::vector<ROI> > CharacterExtractions;
     int p = 0;
     // Load the numberplate
@@ -119,6 +127,15 @@ bool ANPRImage::ProcessGlobalImage(){
     return true;
 }
 
+/*
+    Take vector of ROI and merge into new image surface
+    1) If size < 4, output whole WorkingArea
+    2) Else, apply buffer to each character
+    3) Remove noisy characters
+    4) Create surface of required Height and Width
+    5) Copy character region into new surface
+    6) Display/Save
+*/
 void ANPRImage::MergePlateRegions( std::vector<ROI> Regions, ROI WorkingArea){
 
     BitmapImage ResultImage; // Output Surface
@@ -185,7 +202,7 @@ void ANPRImage::MergePlateRegions( std::vector<ROI> Regions, ROI WorkingArea){
                 }
             StartX++;
             }
-            StartX += Configuration::Spacing;
+            StartX += Configuration::Spacing; // Add spacing to X locator
         }
     }else{
         // If we have less than 4 characters

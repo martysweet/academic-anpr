@@ -6,9 +6,6 @@
 class DisjointSet
 {
     public:
-        /** Default constructor */
-        DisjointSet();
-        ~DisjointSet();
         int MakeSet();
         int Union(int a, int b);
         int Find(int x);

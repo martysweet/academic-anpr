@@ -1,23 +1,14 @@
 #include "DisjointSet.h"
 
-DisjointSet::DisjointSet(){
-
-}
-
-DisjointSet::~DisjointSet(){
-
-}
-
-
+// Creates a new disjoint set which points to itself (parent)
 int DisjointSet::MakeSet(){
-    // Create a new disjoint set, point to itself
     NextSet++;
-    Graph[NextSet] = NextSet; // Increment before use
+    Graph[NextSet] = NextSet; // Incremented before use
     return NextSet; // Let the user know which set ID has been assigned
 }
 
+// Returns the set ID of the most parent set
 int DisjointSet::Find(int x){
-    // Returns the set ID of the parent set
     int ID = Graph[x];
     if(x != ID){
         ID = Find(ID); // Recurse
@@ -25,7 +16,7 @@ int DisjointSet::Find(int x){
     return ID;
 }
 
-
+// Merge two sets together, setting the parent to be the lowest set, return this value
 int DisjointSet::Union(int a, int b){
     // Merge two sets, setting to the lowest set ID
     int aID = Find(a); // Find the lowest ID of each set
@@ -47,9 +38,8 @@ int DisjointSet::Union(int a, int b){
     return nID;
 }
 
-
 /*
-    USAGE::
+    Example Usage:
     DisjointSet MappingSet;
     int a = MappingSet.MakeSet();
     int b = MappingSet.MakeSet();

@@ -14,7 +14,7 @@ class PlateCandidate :  public BitmapImage {
     public:
         void AnalysePlate();
         ROI GetPlateRegion();
-        std::vector<ROI> GetPlateCharacters(int MonochromeRegion = 15);
+        std::vector<ROI> GetPlateCharacters(int MonochromeRegion);
         std::vector<ROI> CCA();
 
     protected:

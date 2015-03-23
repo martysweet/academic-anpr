@@ -1,5 +1,11 @@
 #include "PlateCandidate.h"
-
+/*
+    Returns approximate region of numberplate
+    1) Cleans the image
+    2) Gets potential characters using CCA
+    3) Uses the first element to draw a rough rectangle in the general area
+    4) Returns region
+*/
 ROI PlateCandidate::GetPlateRegion(){
 
     // Preprocess the plate
@@ -30,6 +36,11 @@ ROI PlateCandidate::GetPlateRegion(){
     return Region;
 }
 
+/*
+    Returns potential characters of numberplate
+    1) Cleans the image
+    2) Gets potential characters using CCA
+*/
 std::vector<ROI> PlateCandidate::GetPlateCharacters(int MonochromeRegion){
 
     // Preprocess the plate
@@ -41,13 +52,25 @@ std::vector<ROI> PlateCandidate::GetPlateCharacters(int MonochromeRegion){
     return CCA();
 }
 
+/*
+    Gets characters using Connected-component analysis and ratio analysis
+    1) Give each pixel a label
+    2) Union pixels which are neighbouring each other
+    3) Each unique label represents a blob of pixels
+    4) Draw a rectangle around the blob of pixels
+    5) Measure the ratio, if good, add to potential characters
+    6) Order character by x
+    7) Group characters which are close to each other using DisjointSets
+    8) Get the most common set from step 7
+    9) Return the characters found in step 8
+*/
 std::vector<ROI> PlateCandidate::CCA(){
     // Use Blob Grouping and Connected Component Analysis
     // We need to group objects together in the image
     // http://en.wikipedia.org/wiki/Connected-component_labeling
     // Initialise Variables
     std::vector<int> PixelToLabelMap;
-    PixelToLabelMap.resize(Image->w*Image->h, -1); // Initialise the array to -1
+    PixelToLabelMap.resize(Image->w*Image->h, -1); // Initialise the array to -1, maps each pixel to a label
     DisjointSet MappingSet; // Create new disjoint set structure
     int PixelValue = 0;
     int PixelIdent = 0;
@@ -128,7 +151,7 @@ std::vector<ROI> PlateCandidate::CCA(){
         LabelCount.erase(LabelCount.begin() + 60, LabelCount.end());
     }
 
-    std::vector<ROI> BlobRegions;
+    std::vector<ROI> CharacterCandidate;
     for(int i=0; i < LabelCount.size(); i++){
 
         //std::cout << "Processing Label: " << LabelCount[i].first << " Value: " << LabelCount[i].second << std::endl;
@@ -148,7 +171,7 @@ std::vector<ROI> PlateCandidate::CCA(){
                 PixelCount++;
                 int y = j/(Image->w);
                 int x = j-(y*Image->w);
-                // We can compute the region by magic
+                // We can compute the region by finding the min/max for this label, after matching each pixel
                 if(x < xMin){
                     xMin = x;
                 }
@@ -173,22 +196,15 @@ std::vector<ROI> PlateCandidate::CCA(){
         BlobRegion.Rect.x = xMin;
         BlobRegion.Rect.y = yMin;
         BlobRegion.Rect.Height = yMax-yMin; // Height
-        BlobRegion.Rect.Width = xMax-xMin; // Width
+        BlobRegion.Rect.Width = xMax-xMin;  // Width
         BlobRegion.Pixels = PixelCount;
-
-        BlobRegions.push_back(BlobRegion);
 
         // Plot the region as a rect
         DrawRectangle(BlobRegion.Rect, 0, 255, 0);
-    }
 
-
-
-    // Do analysis on all found BlobRegions
-    std::vector<ROI> CharacterCandidate;
-    for(int i=0; i < BlobRegions.size(); i++){
-        int h = BlobRegions[i].Rect.Height;
-        int w = BlobRegions[i].Rect.Width;
+        // Check if the label (blob region) is a valid character
+        int h = BlobRegion.Rect.Height;
+        int w = BlobRegion.Rect.Width;
         float d = (float)h/(float)w; // Ratio
 
         // Ensure height is bigger than width
@@ -200,17 +216,14 @@ std::vector<ROI> PlateCandidate::CCA(){
         if( ((1.2 <= d) && (d <= 1.7)) || ((5.2 <= d) && (d <= 5.8))        // 2001
             || ((1.5 <= d) && (d <= 2.1)) || ((4.7 <= d) && (d <= 5.2)) ){  // Pre-2001
             // Good candidate
-            BlobRegions[i].Score = h*w; // Larger blobs have a higher score
-            DrawRectangle(BlobRegions[i].Rect, 0, 0, 255);
-            CharacterCandidate.push_back(BlobRegions[i]);
+            BlobRegion.Score = h*w; // Larger blobs have a higher score
+            DrawRectangle(BlobRegion.Rect, 0, 0, 255);
+            CharacterCandidate.push_back(BlobRegion);
         }
 
-
-
-
     }
+
     // Clean up varables here
-    BlobRegions.clear();
     PixelToLabelMap.clear();
 
 
@@ -223,7 +236,6 @@ std::vector<ROI> PlateCandidate::CCA(){
 
     // Create a set representation for each Charactor Candidate
     DisjointSet CharGroup;
-    // More sets than I do in the gym
     // Create the needed number of sets
     for(int i = 0; i < CharacterCandidate.size(); i++){
         CharGroup.MakeSet();
@@ -231,22 +243,25 @@ std::vector<ROI> PlateCandidate::CCA(){
 
     // For each box, starting with smallest x
     for(int i = 0; i < CharacterCandidate.size(); i++){
-        // Compute search region
+        // Compute search points
         Point Point1;
         Point Point2;
         Point Point3;
-        Point1.x = CharacterCandidate[i].Rect.x + CharacterCandidate[i].Rect.Width + (CharacterCandidate[i].Rect.Height/2); // This gives roughly 20mm right when Height ~80
-        Point1.y = CharacterCandidate[i].Rect.y + (CharacterCandidate[i].Rect.Height/2);
-        Point2.x = Point1.x + 5;
-        Point2.y = Point1.y; // Half way
-        Point3.x = Point1.x + 20;
+        Point1.x = CharacterCandidate[i].Rect.x + CharacterCandidate[i].Rect.Width + (CharacterCandidate[i].Rect.Height/2); // x is left edge + Height/2
+        Point1.y = CharacterCandidate[i].Rect.y + (CharacterCandidate[i].Rect.Height/2);    // All points shall be half way down the image
+        Point2.x = Point1.x + 5;    // Move point 5 more pixels
+        Point2.y = Point1.y;
+        Point3.x = Point1.x + 20;   // Move point 20 pixels to the left
         Point3.y = Point1.y;
         DrawLine(Point1, Point3, 255, 153, 0);
 
-        // Lets look through all boxes to the right of this one?
+        // Lets look through all boxes to the right of this one
             for(int j=i; j < CharacterCandidate.size(); j++){
                 Rectangle R = CharacterCandidate[j].Rect;
-                // Do any coordiates of this box, fit in the region above? TODO: If line is within box
+                // Do any coordiates of this box, fit in the region above?
+                // TODO: If problems occur with finding groups of characters, we could draw a line and use the following:
+                // if y within region { for( x+width -> 1.5(x+width){ if x is within region -> UNION} }
+                // The following logic was used when y was different during development, it can be made more efficent
                 if( (Point1.x >= R.x) && (Point1.x <= R.x + R.Width) && (Point1.y >= R.y) && (Point1.y <= R.y + R.Height)
                  || (Point2.x >= R.x) && (Point2.x <= R.x + R.Width) && (Point2.y >= R.y) && (Point2.y <= R.y + R.Height)
                  || (Point3.x >= R.x) && (Point3.x <= R.x + R.Width) && (Point3.y >= R.y) && (Point3.y <= R.y + R.Height) ){
@@ -274,8 +289,8 @@ std::vector<ROI> PlateCandidate::CCA(){
 
     // Order SetVote keeping the key map
     std::vector<std::pair<int,int>> SetVote(SetVoteCount.begin(), SetVoteCount.end());
-    std::sort(SetVote.begin(), SetVote.end(), [](const std::pair<int,int> &element1, const std::pair<int,int> &element2) {
-                                                        return element1.second > element2.second;
+    std::sort(SetVote.begin(), SetVote.end(), [](const std::pair<int,int> &Element1, const std::pair<int,int> &Element2) {
+                                                        return Element1.second > Element2.second;
                                                     });
 
 
@@ -309,6 +324,9 @@ std::vector<ROI> PlateCandidate::CCA(){
     return FinalCandidates;
 }
 
+/*
+    Ensures a ROI is within the image specification to prevent out of bounds
+*/
 void PlateCandidate::ROIFix(ROI &Region){
 
     // Ensure the ROI cooordinates are within the image bounds, or adjust
