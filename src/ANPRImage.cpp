@@ -1,4 +1,4 @@
-#include "ANPRImage.h"
+#include "../include/ANPRImage.h"
 
 ANPRImage::ANPRImage(std::string FileLocation){
     // Attempt to load the input file

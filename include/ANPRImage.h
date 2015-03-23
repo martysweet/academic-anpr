@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iterator>
+#include <numeric>
 
 #include "DataStructures.h"
 #include "PlateCandidate.h"

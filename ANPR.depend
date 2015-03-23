@@ -24,29 +24,29 @@
 	"SDL/SDL.h"
 	"SDL/SDL_image.h"
 
-1426949239 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/main.cpp
+1427124751 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/main.cpp
 	<iostream>
 	<string>
 	<vector>
 	<cmath>
-	"SDL_Wrapper.h"
+	"include/SDL_Wrapper.h"
 	"include/DataStructures.h"
 	"include/BitmapImage.h"
 	"include/ANPRImage.h"
 	"include/PlateCandidate.h"
 
-1427032350 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/BitmapImage.h
+1427120557 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/BitmapImage.h
 	<vector>
 	<string>
 	<iostream>
 	<cstdlib>
 	<cmath>
 	<string>
-	"../SDL_Wrapper.h"
+	"SDL_Wrapper.h"
 	"DataStructures.h"
 
-1427054425 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/BitmapImage.cpp
-	"BitmapImage.h"
+1427120548 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/BitmapImage.cpp
+	"../include/BitmapImage.h"
 
 1425673502 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/NumberPlate.cpp
 	"NumberPlate.h"
@@ -55,16 +55,17 @@
 	"BitmapImage.h"
 	"ANPRImage.h"
 
-1426946197 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/ANPRImage.h
+1427116843 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/ANPRImage.h
 	<vector>
 	<sstream>
 	<algorithm>
 	<iterator>
+	<numeric>
 	"DataStructures.h"
 	"PlateCandidate.h"
 
-1427053202 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/ANPRImage.cpp
-	"ANPRImage.h"
+1427116631 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/ANPRImage.cpp
+	"../include/ANPRImage.h"
 
 1426529678 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/DataStructures.cpp
 	<vector>
@@ -81,8 +82,8 @@
 	"DataStructures.h"
 	"DisjointSet.h"
 
-1427053979 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/PlateCandidate.cpp
-	"PlateCandidate.h"
+1427116633 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/PlateCandidate.cpp
+	"../include/PlateCandidate.h"
 
 1426939764 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/AnalyseImage.h
 	<algorithm>
@@ -95,8 +96,8 @@
 1427033151 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/DisjointSet.h
 	<map>
 
-1427054504 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/DisjointSet.cpp
-	"DisjointSet.h"
+1427116647 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/DisjointSet.cpp
+	"../include/DisjointSet.h"
 
 1426606389 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/OCRAnalysis.cpp
 	"OCRAnalysis.h"
@@ -108,4 +109,200 @@
 
 1427043711 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/DataStructures.h
 	<vector>
+
+1427124649 /home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/include/SDL_Wrapper.h
+	"SDL.h"
+	"SDL_image.h"
+
+1399696797 /usr/include/SDL//SDL.h
+	"SDL_main.h"
+	"SDL_stdinc.h"
+	"SDL_audio.h"
+	"SDL_cdrom.h"
+	"SDL_cpuinfo.h"
+	"SDL_endian.h"
+	"SDL_error.h"
+	"SDL_events.h"
+	"SDL_loadso.h"
+	"SDL_mutex.h"
+	"SDL_rwops.h"
+	"SDL_thread.h"
+	"SDL_timer.h"
+	"SDL_video.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_main.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_stdinc.h
+	"SDL_config.h"
+	<sys/types.h>
+	<stdio.h>
+	<stdlib.h>
+	<stddef.h>
+	<stdarg.h>
+	<stdlib.h>
+	<malloc.h>
+	<stddef.h>
+	<stdarg.h>
+	<memory.h>
+	<string.h>
+	<strings.h>
+	<inttypes.h>
+	<stdint.h>
+	<ctype.h>
+	<iconv.h>
+	"begin_code.h"
+	<alloca.h>
+	<malloc.h>
+	<malloc.h>
+	<malloc.h>
+	<stdlib.h>
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_config.h
+	"SDL_platform.h"
+	<stdarg.h>
+
+1399696797 /usr/include/SDL//SDL_platform.h
+
+1399696797 /usr/include/SDL//begin_code.h
+
+1399696797 /usr/include/SDL//close_code.h
+
+1399696797 /usr/include/SDL//SDL_audio.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_endian.h"
+	"SDL_mutex.h"
+	"SDL_thread.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_error.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_endian.h
+	"SDL_stdinc.h"
+	<endian.h>
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_mutex.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_thread.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_mutex.h"
+	"begin_code.h"
+	<process.h>
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_rwops.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_cdrom.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_cpuinfo.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_events.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_active.h"
+	"SDL_keyboard.h"
+	"SDL_mouse.h"
+	"SDL_joystick.h"
+	"SDL_quit.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_active.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_keyboard.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_keysym.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_keysym.h
+
+1399696797 /usr/include/SDL//SDL_mouse.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_video.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_video.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"SDL_rwops.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_joystick.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_quit.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+
+1399696797 /usr/include/SDL//SDL_loadso.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_timer.h
+	"SDL_stdinc.h"
+	"SDL_error.h"
+	"begin_code.h"
+	"close_code.h"
+
+1399696797 /usr/include/SDL//SDL_version.h
+	"SDL_stdinc.h"
+	"begin_code.h"
+	"close_code.h"
+
+1390221300 /usr/include/SDL//SDL_image.h
+	"SDL.h"
+	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1426949185 source:/home/marty/Documents/Reading/Part 1 /Programming/Year 1 Project/ANPR/CODE/src/SDL_Wrapper.cpp
+	"SDL_Wrapper.h"
+	<stdio.h>
+	<string.h>
 

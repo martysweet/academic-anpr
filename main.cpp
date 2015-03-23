@@ -3,11 +3,21 @@
 #include <vector>
 #include <cmath>
 
-#include "SDL_Wrapper.h"
+#include "include/SDL_Wrapper.h"
 #include "include/DataStructures.h"
 #include "include/BitmapImage.h"
 #include "include/ANPRImage.h"
 #include "include/PlateCandidate.h"
+
+/*
+Compiler Include:
+GCC: /usr/include
+VS2013: $(SolutionDir)Libraries\SDL-1.2.15\include;$(SolutionDir)Libraries\SDL_image-1.2.12\include
+
+Linker Options:
+GCC: -lSDLmain -lSDL -lSDL_image
+VS2013: $(SolutionDir)Libraries\SDL-1.2.15\lib\x86\SDL.lib;$(SolutionDir)Libraries\SDL-1.2.15\lib\x86\SDLmain.lib;$(SolutionDir)Libraries\SDL_image-1.2.12\lib\x86\SDL_image.lib;%(AdditionalDependencies)
+*/
 
 namespace Configuration {
     bool Debug;

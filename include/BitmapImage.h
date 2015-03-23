@@ -8,7 +8,7 @@
 #include <cmath>
 #include <string>
 
-#include "../SDL_Wrapper.h"
+#include "SDL_Wrapper.h"
 #include "DataStructures.h"
 
 

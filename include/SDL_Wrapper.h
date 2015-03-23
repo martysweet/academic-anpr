@@ -11,8 +11,8 @@
 #ifndef SDL_WRAPPER_H
 #define SDL_WRAPPER_H
 
-#include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
+#include "SDL.h"
+#include "SDL_image.h"
 
 #ifdef __cplusplus
 extern "C" {

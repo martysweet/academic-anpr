@@ -1,4 +1,4 @@
-#include "DisjointSet.h"
+#include "../include/DisjointSet.h"
 
 // Creates a new disjoint set which points to itself (parent)
 int DisjointSet::MakeSet(){

@@ -1,4 +1,4 @@
-#include "BitmapImage.h"
+#include "../include/BitmapImage.h"
 
 /* Image Loading/Saving Functions */
 // Save current Image to a file
@@ -295,7 +295,7 @@ void BitmapImage::CreateIntegralArray(){
 
 // Get the integral value with error handling to prevent OOB
 int  BitmapImage::GetIntegralValue(int x, int y){
-    if(x < 0 || y < 0){
+    if(x < 0 || y < 0 || ((Image->w*y)+x) > (Image->w*Image->h)){
         return 0;       // The values are to the top/left of the image
     }else{
         return IntegralArray[(Image->w*y)+x];

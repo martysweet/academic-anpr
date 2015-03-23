@@ -1,4 +1,4 @@
-#include "SDL_Wrapper.h"
+#include "../include/SDL_Wrapper.h"
 #include <stdio.h>
 #include <string.h>
 
